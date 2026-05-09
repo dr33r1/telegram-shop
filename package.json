@@ -1,0 +1,14 @@
+{
+  "name": "telegram-shop",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { "start": "node bot/index.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "sql.js": "^1.12.0"
+  }
+}
