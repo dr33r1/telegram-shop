@@ -141,18 +141,60 @@ app.get('/api/products/:id',(req,res) => {
 
 app.post('/api/order', async (req,res) => {
   try {
-    const { tg_user_id, items, total } = req.body;
+    const { tg_user_id, tg_username, tg_first_name, items, total, delivery_mode, client_info } = req.body;
     if (!tg_user_id||!Array.isArray(items)||!items.length)
       return res.status(400).json({error:'Payload invalide'});
     const user = getUserByTgId(tg_user_id);
     if (!user) return res.status(404).json({error:'Utilisateur non trouvé'});
-    const { lastInsertRowid:orderId } = createOrder(user.id,total,JSON.stringify(items));
+
+    const orderData = JSON.stringify({ items, delivery_mode, client_info });
+    const { lastInsertRowid:orderId } = createOrder(user.id, total, orderData);
+
+    // ── Lignes articles
     const lines = items.map(i=>`• ${i.name} ×${i.qty} — ${(i.price*i.qty).toFixed(2)} €`).join('\n');
-    await bot.telegram.sendMessage(tg_user_id,
-      `✅ *Commande #${orderId} reçue !*\n\n${lines}\n\n💰 *Total : ${Number(total).toFixed(2)} €*\n\nMerci ! 🎉`,
-      {parse_mode:'Markdown'}
-    ).catch(e=>console.warn('Notif échouée:',e.message));
-    res.json({success:true,order_id:orderId});
+
+    // ── Infos livraison formatées
+    let deliveryBlock = '';
+    if (delivery_mode === 'pickup') {
+      deliveryBlock =
+        `🏪 *Mode : Sur place*\n` +
+        `👤 ${client_info.name}\n` +
+        `📞 ${client_info.phone}` +
+        (client_info.note ? `\n💬 ${client_info.note}` : '');
+    } else {
+      deliveryBlock =
+        `📦 *Mode : Livraison*\n` +
+        `👤 ${client_info.firstname} ${client_info.lastname}\n` +
+        `📍 ${client_info.address}, ${client_info.zip} ${client_info.city}\n` +
+        `📞 ${client_info.phone}` +
+        (client_info.note ? `\n💬 ${client_info.note}` : '');
+    }
+
+    const clientMsg =
+      `✅ *Commande #${orderId} confirmée !*\n\n` +
+      `${lines}\n\n` +
+      `💰 *Total : ${Number(total).toFixed(2)} €*\n\n` +
+      `${deliveryBlock}\n\n` +
+      `Nous allons vous contacter rapidement. Merci ! 🙏`;
+
+    const adminMsg =
+      `🔔 *Nouvelle commande #${orderId}*\n\n` +
+      `👤 Client : ${tg_first_name||'Inconnu'}${tg_username ? ' (@'+tg_username+')' : ''} [ID: ${tg_user_id}]\n\n` +
+      `🛍️ *Articles :*\n${lines}\n\n` +
+      `💰 *Total : ${Number(total).toFixed(2)} €*\n\n` +
+      `${deliveryBlock}`;
+
+    // Notifier le client
+    await bot.telegram.sendMessage(tg_user_id, clientMsg, {parse_mode:'Markdown'})
+      .catch(e=>console.warn('Notif client échouée:',e.message));
+
+    // Notifier l'admin
+    if (ADMIN_TG_ID) {
+      await bot.telegram.sendMessage(ADMIN_TG_ID, adminMsg, {parse_mode:'Markdown'})
+        .catch(e=>console.warn('Notif admin échouée:',e.message));
+    }
+
+    res.json({success:true, order_id:orderId});
   } catch(e) { console.error(e); res.status(500).json({error:'Erreur serveur'}); }
 });
 
