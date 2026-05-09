@@ -110,9 +110,10 @@ bot.command('admin', async (ctx) => {
   if (ADMIN_TG_ID && ctx.from.id !== ADMIN_TG_ID)
     return ctx.reply('⛔ Accès refusé.');
 
-  const RAILWAY_URL = process.env.RAILWAY_STATIC_URL
-    ? `https://${process.env.RAILWAY_STATIC_URL}`
-    : `http://localhost:${PORT}`;
+  // PUBLIC_URL à définir dans Railway Variables (ex: https://xxx.railway.app)
+  const RAILWAY_URL = process.env.PUBLIC_URL
+    || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null)
+    || `http://localhost:${PORT}`;
 
   await ctx.reply(
     `🔐 *Panneau d'administration*\n\n` +
