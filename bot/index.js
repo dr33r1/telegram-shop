@@ -26,6 +26,20 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.get('/health', (_,res) => res.json({ ok:true, ts:new Date().toISOString() }));
 
+// ── Notification commande → admin (utilisé par le bouton Telegram de la mini app)
+app.post('/api/notify', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'message requis' });
+    if (!ADMIN_TG_ID) return res.status(503).json({ error: 'ADMIN_TG_ID non configuré' });
+    await bot.telegram.sendMessage(ADMIN_TG_ID, message, { parse_mode: 'Markdown' });
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('notify error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 await new Promise(resolve => app.listen(PORT, () => {
   console.log(`🚀 API en écoute sur le port ${PORT}`);
   resolve();

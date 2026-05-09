@@ -173,7 +173,7 @@
 const STORE_NAME   = 'Coffee10';
 const ADMIN_TG     = 'Thecoffee10';          // sans @
 const ADMIN_WA     = '33746772435';          // format international sans +
-const API          = new URLSearchParams(location.search).get('api') || 'http://localhost:3000';
+const API          = 'https://telegram-shop-coffee-10.up.railway.app';
 
 // ── Telegram SDK ───────────────────────────────────────────────────────────
 const tg     = window.Telegram?.WebApp;
@@ -460,15 +460,29 @@ function renderShare() {
   $('drawerFoot').innerHTML = '';
 }
 
-function sendViaTelegram() {
+async function sendViaTelegram() {
+  const btn = document.querySelector('.sbtn-tg');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Envoi…'; }
+
   const msg = buildMessage();
-  const url = `tg://msg?to=@${ADMIN_TG}&text=${encodeURIComponent(msg)}`;
-  if (tg) {
-    tg.openLink(url);
-  } else {
-    window.open(url, '_blank');
+  // Convertir en Markdown Telegram (gras)
+  const mdMsg = msg
+    .replace('🛍️ Commande', '*🛍️ Commande')
+    .replace('\n' + '─'.repeat(28), '*\n' + '─'.repeat(28));
+
+  try {
+    const res  = await fetch(`${API}/api/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+    goToStep('success');
+  } catch(e) {
+    toast('❌ Erreur : ' + e.message, 3000);
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span class="sbtn-icon">✈️</span> Envoyer via Telegram'; }
   }
-  goToStep('success');
 }
 
 function sendViaWhatsApp() {
