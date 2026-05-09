@@ -8,14 +8,14 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:      var(--tg-theme-bg-color,#0f0f11);
-      --surface: var(--tg-theme-secondary-bg-color,#1a1a1f);
-      --text:    var(--tg-theme-text-color,#f0f0f0);
-      --hint:    var(--tg-theme-hint-color,#888);
-      --accent:  var(--tg-theme-button-color,#6366f1);
-      --accentfg:var(--tg-theme-button-text-color,#fff);
-      --link:    var(--tg-theme-link-color,#818cf8);
-      --radius:  14px;
+      --bg:       var(--tg-theme-bg-color,#0f0f11);
+      --surface:  var(--tg-theme-secondary-bg-color,#1a1a1f);
+      --text:     var(--tg-theme-text-color,#f0f0f0);
+      --hint:     var(--tg-theme-hint-color,#888);
+      --accent:   var(--tg-theme-button-color,#6366f1);
+      --accentfg: var(--tg-theme-button-text-color,#fff);
+      --link:     var(--tg-theme-link-color,#818cf8);
+      --radius:   14px;
     }
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100dvh;padding-bottom:90px}
@@ -38,9 +38,9 @@
     .chip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1.5px solid transparent;border-radius:99px;padding:6px 14px;cursor:pointer;white-space:nowrap;font-size:13px;font-weight:600;transition:all .2s;user-select:none}
     .chip.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--link)}
 
-    /* Grid */
+    /* Product grid */
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px}
-    .card{background:var(--surface);border-radius:var(--radius);overflow:hidden;transition:transform .18s;animation:up .3s ease both}
+    .card{background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .18s;animation:up .3s ease both}
     .card:active{transform:scale(.96)}
     @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     .card img{width:100%;aspect-ratio:1;object-fit:cover;background:#222}
@@ -55,80 +55,85 @@
     .spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty{text-align:center;padding:60px 20px;color:var(--hint)}
-    .empty-icon{font-size:44px;margin-bottom:10px}
 
     /* Toast */
-    .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(20,20,30,.96);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s;z-index:300;white-space:nowrap}
+    .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(20,20,30,.96);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s;z-index:400;white-space:nowrap}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
     /* Overlay + Drawer */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
     .overlay.on{opacity:1;pointer-events:all}
-    .drawer{position:fixed;left:0;right:0;bottom:0;z-index:101;background:var(--surface);border-radius:22px 22px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);max-height:90dvh;display:flex;flex-direction:column}
+    .drawer{position:fixed;left:0;right:0;bottom:0;z-index:101;background:var(--surface);border-radius:22px 22px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);max-height:92dvh;display:flex;flex-direction:column}
     .drawer.on{transform:translateY(0)}
     .drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin:14px auto 0;flex-shrink:0}
-    .drawer-header{padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-    .drawer-title{font-size:17px;font-weight:800}
+    .drawer-head{padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;display:flex;align-items:center;gap:10px}
+    .drawer-back{background:none;border:none;color:var(--hint);font-size:22px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+    .drawer-title{font-size:17px;font-weight:800;flex:1}
     .drawer-body{overflow-y:auto;flex:1;padding:16px 18px}
-    .drawer-footer{padding:12px 18px 20px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+    .drawer-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
 
     /* Cart items */
-    .ci{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .ci{display:flex;align-items:center;gap:12px;margin-bottom:12px}
     .ci img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#333}
-    .ci-info{flex:1;min-width:0}
-    .ci-name{font-size:13px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ci-sub{font-size:12px;color:var(--hint)}
-    .qty{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .ci-info{flex:1}
+    .ci-name{font-size:13px;font-weight:700;margin-bottom:2px}
+    .ci-price{font-size:12px;color:var(--hint)}
+    .qty{display:flex;align-items:center;gap:8px}
     .qty-btn{width:30px;height:30px;background:var(--bg);border:none;border-radius:8px;color:var(--text);font-size:19px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
     .qty-n{font-size:15px;font-weight:800;min-width:22px;text-align:center}
-    .total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:4px;font-weight:700}
+
+    /* Total */
+    .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700}
     .total-amt{font-size:22px;font-weight:900;color:var(--link)}
 
-    /* Buttons */
-    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.2px}
-    .btn:active{opacity:.75}
-    .btn:disabled{opacity:.4;cursor:default}
-    .btn-accent{background:var(--accent);color:var(--accentfg)}
-    .btn-ghost{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.1)}
-    .btn-tg{background:#2AABEE;color:#fff}
-    .btn-wa{background:#25D366;color:#fff}
-    .btn-sm{padding:10px 14px;font-size:14px;border-radius:10px}
-
-    /* Delivery options */
-    .dopt{display:flex;align-items:center;gap:14px;background:var(--bg);border:2px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:15px;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:10px;user-select:none}
-    .dopt.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
-    .dopt-icon{font-size:26px;flex-shrink:0;width:36px;text-align:center}
-    .dopt-title{font-size:15px;font-weight:700}
-    .dopt-sub{font-size:12px;color:var(--hint);margin-top:2px}
-
-    /* Form */
-    .fgroup{margin-bottom:12px}
-    .fgroup label{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-    .req{color:#ef4444;font-size:10px}
-    .opt{color:var(--hint);font-size:9px;font-weight:600;background:rgba(255,255,255,.08);border-radius:4px;padding:1px 5px;letter-spacing:.3px}
-    .fgroup input{width:100%;background:var(--bg);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
-    .fgroup input:focus{border-color:var(--accent)}
-    .fgroup input::placeholder{color:var(--hint)}
-
-    /* Order message box */
-    .msg-box{background:var(--bg);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text);max-height:200px;overflow-y:auto;margin-bottom:14px;font-family:monospace}
-    .copy-row{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--hint);margin-bottom:16px;cursor:pointer}
-    .copy-row:active{opacity:.6}
+    /* Main action btn */
+    .abtn{width:100%;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.1px}
+    .abtn:active{opacity:.75}
+    .abtn:disabled{opacity:.4;cursor:default}
+    .abtn-primary{background:var(--accent);color:var(--accentfg)}
+    .abtn-ghost{background:rgba(255,255,255,.08);color:var(--text);margin-top:8px}
 
     /* Section label */
     .slabel{font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+
+    /* Recap box */
+    .recap{background:var(--bg);border-radius:12px;padding:14px;margin-bottom:20px}
+    .recap-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+    .recap-row:last-child{margin-bottom:0;padding-top:8px;border-top:1px solid rgba(255,255,255,.07);font-weight:800;font-size:15px}
+
+    /* Mode cards */
+    .modes{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .mcard{display:flex;align-items:center;gap:14px;background:var(--bg);border:2px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .2s,background .2s}
+    .mcard:active{transform:scale(.98)}
+    .mcard.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+    .mcard-icon{font-size:30px;flex-shrink:0}
+    .mcard-title{font-size:15px;font-weight:700;margin-bottom:2px}
+    .mcard-sub{font-size:12px;color:var(--hint)}
+
+    /* Form fields */
+    .fgroup{margin-bottom:12px}
+    .fgroup label{display:block;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .fgroup input{width:100%;background:var(--bg);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;outline:none;font-family:inherit;transition:border-color .2s}
+    .fgroup input:focus{border-color:var(--accent)}
+    .fgroup .opt-tag{font-size:10px;color:var(--hint);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px}
+
+    /* Share buttons */
+    .share-btns{display:flex;flex-direction:column;gap:10px}
+    .sbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .15s}
+    .sbtn:active{opacity:.75}
+    .sbtn-tg{background:#229ED9;color:#fff}
+    .sbtn-wa{background:#25D366;color:#fff}
+    .sbtn-icon{font-size:22px}
+
+    /* Message preview */
+    .msg-preview{background:var(--bg);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;font-size:12px;line-height:1.7;color:var(--hint);white-space:pre-wrap;word-break:break-word;margin-bottom:16px;font-family:monospace;max-height:180px;overflow-y:auto}
 
     /* Success */
     .success{text-align:center;padding:30px 10px}
     .success-icon{font-size:60px;margin-bottom:14px;animation:pop .4s cubic-bezier(.36,.07,.19,.97)}
     @keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
-    .success-title{font-size:21px;font-weight:900;margin-bottom:6px}
+    .success-title{font-size:21px;font-weight:900;margin-bottom:8px}
     .success-sub{color:var(--hint);font-size:13px;line-height:1.7}
-
-    /* Recap mini */
-    .recap{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px}
-    .recap-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
-    .recap-total{display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid rgba(255,255,255,.08);margin-top:8px;padding-top:8px}
   </style>
 </head>
 <body>
@@ -136,7 +141,7 @@
 <header class="header">
   <div class="header-top">
     <span class="store-title">☕ Coffee10</span>
-    <button class="cart-btn" id="cartBtn">🛒<span class="cart-badge" id="badge">0</span></button>
+    <button class="cart-btn" id="cartBtn">🛒<span class="cart-badge" id="badge"></span></button>
   </div>
   <div class="search-bar">
     <span style="color:var(--hint)">🔍</span>
@@ -151,54 +156,57 @@
 <main id="main"><div class="loader"><div class="spin"></div></div></main>
 
 <div class="toast" id="toast"></div>
-<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="overlay" id="overlay"></div>
 
 <div class="drawer" id="drawer">
   <div class="drawer-handle"></div>
-  <div class="drawer-header"><div class="drawer-title" id="drawerTitle">🛒 Mon panier</div></div>
+  <div class="drawer-head">
+    <button class="drawer-back" id="backBtn" style="display:none" onclick="goBack()">‹</button>
+    <div class="drawer-title" id="drawerTitle">🛒 Mon panier</div>
+  </div>
   <div class="drawer-body" id="drawerBody"></div>
-  <div class="drawer-footer" id="drawerFooter"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
 </div>
 
 <script>
 // ── Config ─────────────────────────────────────────────────────────────────
 const STORE_NAME   = 'Coffee10';
-const ADMIN_TG     = 'Thecoffee10';       // username sans @
-const ADMIN_WA     = '33746772435';        // format international sans +
+const ADMIN_TG     = 'Thecoffee10';          // sans @
+const ADMIN_WA     = '33746772435';          // format international sans +
+const API          = new URLSearchParams(location.search).get('api') || 'http://localhost:3000';
 
+// ── Telegram SDK ───────────────────────────────────────────────────────────
 const tg     = window.Telegram?.WebApp;
 const tgUser = tg?.initDataUnsafe?.user || null;
 if (tg) { tg.ready(); tg.expand(); tg.enableClosingConfirmation(); }
 
-const API = new URLSearchParams(location.search).get('api') || 'http://localhost:3000';
-
 // ── State ──────────────────────────────────────────────────────────────────
 let products = [], activeCat = '';
-let cart     = JSON.parse(localStorage.getItem('tg_cart') || '[]');
-let mode     = 'cart'; // cart | delivery-choice | form | send
-let deliveryMode = ''; // meetup | livraison | colis
+let cart     = JSON.parse(localStorage.getItem('c10_cart') || '[]');
+let step     = 'cart'; // cart | mode | form | share | success
+let mode     = '';     // meetup | livraison | colis
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ── Utils ──────────────────────────────────────────────────────────────────
 const $   = id => document.getElementById(id);
-const fmt = n  => Number(n).toLocaleString('fr-FR', {style:'currency', currency:'EUR'});
+const fmt = n  => Number(n).toLocaleString('fr-FR', { style:'currency', currency:'EUR' });
 const cartTotal = () => cart.reduce((s,i) => s + i.price * i.qty, 0);
 const cartCount = () => cart.reduce((s,i) => s + i.qty, 0);
 
-function toast(msg, ms=2200) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('on');
+function toast(msg, ms = 2200) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
   setTimeout(() => t.classList.remove('on'), ms);
 }
 
 function saveCart() {
-  localStorage.setItem('tg_cart', JSON.stringify(cart));
+  localStorage.setItem('c10_cart', JSON.stringify(cart));
   const n = cartCount();
-  $('badge').textContent = n;
-  $('badge').classList.toggle('on', n > 0);
+  const b = $('badge');
+  b.textContent = n || '';
+  b.classList.toggle('on', n > 0);
   if (tg) {
-    if (n > 0) { tg.MainButton.setText(`🛒 Panier · ${fmt(cartTotal())}`); tg.MainButton.show(); }
-    else tg.MainButton.hide();
+    n > 0
+      ? (tg.MainButton.setText(`🛒 Panier · ${fmt(cartTotal())}`), tg.MainButton.show())
+      : tg.MainButton.hide();
   }
 }
 
@@ -212,54 +220,65 @@ function addToCart(p) {
 
 function changeQty(id, d) {
   const i = cart.findIndex(x => x.id === id);
-  if (i === -1) return;
+  if (i < 0) return;
   cart[i].qty += d;
   if (cart[i].qty <= 0) cart.splice(i, 1);
   saveCart();
   renderCart();
 }
 
-// ── Drawer ─────────────────────────────────────────────────────────────────
+// ── Drawer open/close ──────────────────────────────────────────────────────
 function openDrawer() {
-  mode = 'cart';
-  deliveryMode = '';
   $('overlay').classList.add('on');
   $('drawer').classList.add('on');
-  renderCart();
+  $('overlay').onclick = closeDrawer;
   tg?.BackButton.show();
+  tg?.BackButton.onClick(goBack);
+  goToStep('cart');
 }
+
 function closeDrawer() {
   $('overlay').classList.remove('on');
   $('drawer').classList.remove('on');
   tg?.BackButton.hide();
+  step = 'cart'; mode = '';
+}
+
+function goBack() {
+  if (step === 'mode')  { goToStep('cart'); return; }
+  if (step === 'form')  { goToStep('mode'); return; }
+  if (step === 'share') { goToStep('form'); return; }
+  closeDrawer();
+}
+
+function goToStep(s) {
+  step = s;
+  const back = $('backBtn');
+  back.style.display = (s === 'cart' || s === 'success') ? 'none' : 'block';
+  if (s === 'cart')    renderCart();
+  if (s === 'mode')    renderMode();
+  if (s === 'form')    renderForm();
+  if (s === 'share')   renderShare();
+  if (s === 'success') renderSuccess();
 }
 
 $('cartBtn').addEventListener('click', openDrawer);
 tg?.MainButton.onClick(openDrawer);
-tg?.BackButton.onClick(() => {
-  if (mode === 'delivery-choice' || mode === 'form' || mode === 'send') {
-    if (mode === 'form' || mode === 'send') { mode = 'delivery-choice'; renderDeliveryChoice(); }
-    else { mode = 'cart'; renderCart(); }
-  } else closeDrawer();
-});
 
-// ── 1. PANIER ──────────────────────────────────────────────────────────────
+// ── ÉTAPE 1 : Panier ───────────────────────────────────────────────────────
 function renderCart() {
-  mode = 'cart';
   $('drawerTitle').textContent = '🛒 Mon panier';
-
   if (!cart.length) {
-    $('drawerBody').innerHTML = `<div class="empty"><div class="empty-icon">🧺</div><div style="color:var(--hint)">Votre panier est vide</div></div>`;
-    $('drawerFooter').innerHTML = '';
+    $('drawerBody').innerHTML = `<div class="empty"><div style="font-size:44px">🧺</div><div style="color:var(--hint);margin-top:8px">Votre panier est vide</div></div>`;
+    $('drawerFoot').innerHTML = '';
     return;
   }
-
   $('drawerBody').innerHTML = cart.map(item => `
     <div class="ci">
-      <img src="${item.image_url||''}" onerror="this.style.display='none'" alt="">
+      <img src="${item.image_url||''}" onerror="this.style.opacity=0" alt="">
       <div class="ci-info">
         <div class="ci-name">${item.name}</div>
-        <div class="ci-sub">${fmt(item.price)} × ${item.qty} = <strong>${fmt(item.price * item.qty)}</strong></div>
+        <div class="ci-price">${fmt(item.price)} · <b>${fmt(item.price * item.qty)}</b></div>
       </div>
       <div class="qty">
         <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
@@ -267,227 +286,195 @@ function renderCart() {
         <button class="qty-btn" onclick="changeQty(${item.id},+1)">+</button>
       </div>
     </div>
-  `).join('') + `
+  `).join('');
+  $('drawerFoot').innerHTML = `
     <div class="total-row">
       <span>Total</span>
       <span class="total-amt">${fmt(cartTotal())}</span>
     </div>
-  `;
-
-  $('drawerFooter').innerHTML = `
-    <button class="btn btn-accent" onclick="renderDeliveryChoice()">
-      Choisir le mode de réception →
-    </button>
+    <button class="abtn abtn-primary" onclick="goToStep('mode')">Passer la commande →</button>
   `;
 }
 
-// ── 2. CHOIX LIVRAISON ─────────────────────────────────────────────────────
-function renderDeliveryChoice() {
-  mode = 'delivery-choice';
-  deliveryMode = '';
-  $('drawerTitle').textContent = '📍 Mode de réception';
-
+// ── ÉTAPE 2 : Choix du mode ────────────────────────────────────────────────
+function renderMode() {
+  $('drawerTitle').textContent = 'Mode de réception';
   $('drawerBody').innerHTML = `
-    <!-- Récap rapide -->
-    <div class="recap" style="margin-bottom:18px">
-      ${cart.map(i => `<div class="recap-row"><span>${i.name} <span style="color:var(--hint)">×${i.qty}</span></span><span>${fmt(i.price*i.qty)}</span></div>`).join('')}
-      <div class="recap-total"><span>Total</span><span style="color:var(--link)">${fmt(cartTotal())}</span></div>
+    <div class="recap" style="margin-bottom:20px">
+      <div class="slabel" style="margin-bottom:8px">Votre commande</div>
+      ${cart.map(i=>`
+        <div class="recap-row">
+          <span>${i.name} <span style="color:var(--hint)">×${i.qty}</span></span>
+          <span>${fmt(i.price * i.qty)}</span>
+        </div>
+      `).join('')}
+      <div class="recap-row">
+        <span>Total</span>
+        <span style="color:var(--link)">${fmt(cartTotal())}</span>
+      </div>
     </div>
 
     <div class="slabel">Comment souhaitez-vous récupérer votre commande ?</div>
-
-    <div class="dopt" id="opt-meetup" onclick="selectMode('meetup')">
-      <div class="dopt-icon">🤝</div>
-      <div>
-        <div class="dopt-title">MeetUp</div>
-        <div class="dopt-sub">On se retrouve en personne</div>
+    <div class="modes">
+      <div class="mcard${mode==='meetup'?' on':''}" onclick="selectMode('meetup')">
+        <div class="mcard-icon">🤝</div>
+        <div>
+          <div class="mcard-title">MeetUp</div>
+          <div class="mcard-sub">On se retrouve en personne</div>
+        </div>
       </div>
-    </div>
-    <div class="dopt" id="opt-livraison" onclick="selectMode('livraison')">
-      <div class="dopt-icon">🚗</div>
-      <div>
-        <div class="dopt-title">Livraison</div>
-        <div class="dopt-sub">Livraison à votre adresse</div>
+      <div class="mcard${mode==='livraison'?' on':''}" onclick="selectMode('livraison')">
+        <div class="mcard-icon">🚗</div>
+        <div>
+          <div class="mcard-title">Livraison</div>
+          <div class="mcard-sub">Livraison à domicile</div>
+        </div>
       </div>
-    </div>
-    <div class="dopt" id="opt-colis" onclick="selectMode('colis')">
-      <div class="dopt-icon">📦</div>
-      <div>
-        <div class="dopt-title">Colis</div>
-        <div class="dopt-sub">Envoi postal / transporteur</div>
+      <div class="mcard${mode==='colis'?' on':''}" onclick="selectMode('colis')">
+        <div class="mcard-icon">📦</div>
+        <div>
+          <div class="mcard-title">Colis</div>
+          <div class="mcard-sub">Envoi postal</div>
+        </div>
       </div>
     </div>
   `;
-
-  $('drawerFooter').innerHTML = `
-    <button class="btn btn-accent" id="nextBtn" onclick="goToForm()" disabled>
+  $('drawerFoot').innerHTML = `
+    <button class="abtn abtn-primary" id="modeNext" onclick="goToStep('form')" ${mode?'':'disabled'}>
       Continuer →
     </button>
   `;
 }
 
 function selectMode(m) {
-  deliveryMode = m;
-  document.querySelectorAll('.dopt').forEach(d => d.classList.remove('on'));
-  $('opt-' + m).classList.add('on');
-  $('nextBtn').disabled = false;
+  mode = m;
+  // Mettre à jour les cartes visuellement
+  document.querySelectorAll('.mcard').forEach(c => c.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  $('modeNext').disabled = false;
+  tg?.HapticFeedback?.selectionChanged();
 }
 
-// ── 3. FORMULAIRE (Livraison / Colis) ─────────────────────────────────────
-function goToForm() {
-  if (!deliveryMode) return;
-  if (deliveryMode === 'meetup') { renderSend(); return; }
-  renderForm();
-}
-
+// ── ÉTAPE 3 : Formulaire (ou rien pour MeetUp) ────────────────────────────
 function renderForm() {
-  mode = 'form';
-  const label = deliveryMode === 'livraison' ? '🚗 Livraison' : '📦 Colis';
-  $('drawerTitle').textContent = label;
+  $('drawerTitle').textContent = mode === 'meetup' ? '🤝 MeetUp' : mode === 'livraison' ? '🚗 Livraison' : '📦 Colis';
 
+  if (mode === 'meetup') {
+    // Pas de formulaire → aller directement au partage
+    $('drawerBody').innerHTML = `
+      <div style="text-align:center;padding:30px 10px">
+        <div style="font-size:52px;margin-bottom:14px">🤝</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">Parfait !</div>
+        <div style="color:var(--hint);font-size:14px;line-height:1.6">
+          Votre commande est prête.<br>Envoyez-la pour convenir du lieu et de l'heure du MeetUp.
+        </div>
+      </div>
+    `;
+    $('drawerFoot').innerHTML = `
+      <button class="abtn abtn-primary" onclick="goToStep('share')">Envoyer la commande →</button>
+    `;
+    return;
+  }
+
+  // Livraison ou Colis
   $('drawerBody').innerHTML = `
+    <div class="slabel" style="margin-bottom:14px">Informations de ${mode === 'livraison' ? 'livraison' : 'réception du colis'}</div>
+
     <div class="fgroup">
-      <label>Adresse <span class="req">● Obligatoire</span></label>
-      <input id="f-address" type="text" placeholder="12 rue de la Paix, 75001 Paris"/>
+      <label>Adresse <span style="color:var(--accent)">*</span></label>
+      <input id="f-address" type="text" placeholder="12 rue de la Paix"/>
     </div>
     <div class="fgroup">
-      <label>Bâtiment <span class="opt">Optionnel</span></label>
-      <input id="f-bat" type="text" placeholder="Bâtiment A, Résidence Les Pins…"/>
+      <label>Bâtiment <span class="opt-tag">(optionnel)</span></label>
+      <input id="f-building" type="text" placeholder="Bât A, Résidence Les Pins…"/>
     </div>
     <div class="fgroup">
-      <label>Code interphone <span class="opt">Optionnel</span></label>
-      <input id="f-code" type="text" placeholder="Ex : 1234#"/>
+      <label>Code interphone <span class="opt-tag">(optionnel)</span></label>
+      <input id="f-code" type="text" placeholder="B123, 4321…"/>
     </div>
     <div class="fgroup">
-      <label>Téléphone <span class="opt">Optionnel</span></label>
+      <label>Téléphone <span class="opt-tag">(optionnel)</span></label>
       <input id="f-phone" type="tel" placeholder="+33 6 00 00 00 00"/>
     </div>
   `;
-
-  $('drawerFooter').innerHTML = `
-    <button class="btn btn-accent" onclick="validateForm()">
-      Voir ma commande →
-    </button>
+  $('drawerFoot').innerHTML = `
+    <button class="abtn abtn-primary" onclick="validateForm()">Préparer la commande →</button>
   `;
 }
 
 function validateForm() {
   const address = ($('f-address')?.value || '').trim();
-  if (!address) { toast('⚠️ Adresse obligatoire', 2000); return; }
-  renderSend();
+  if (!address) { toast('⚠️ L\'adresse est obligatoire', 2200); return; }
+  goToStep('share');
 }
 
-// ── 4. ENVOI MESSAGE ───────────────────────────────────────────────────────
-function renderSend() {
-  mode = 'send';
-  $('drawerTitle').textContent = '✉️ Envoyer la commande';
+// ── ÉTAPE 4 : Partage Telegram / WhatsApp ─────────────────────────────────
+function buildMessage() {
+  const username = tgUser?.username ? `@${tgUser.username}` : tgUser?.first_name || 'Client';
+  const lines    = cart.map(i => `• ${i.name} ×${i.qty} — ${fmt(i.price * i.qty)}`).join('\n');
 
+  let modeBlock = '';
+  if (mode === 'meetup') {
+    modeBlock = '🤝 Mode : MeetUp';
+  } else {
+    const addr     = ($('f-address')?.value  || '').trim();
+    const building = ($('f-building')?.value || '').trim();
+    const code     = ($('f-code')?.value     || '').trim();
+    const phone    = ($('f-phone')?.value    || '').trim();
+
+    const label = mode === 'livraison' ? '🚗 Mode : Livraison' : '📦 Mode : Colis';
+    modeBlock   = label + '\n';
+    modeBlock  += `📍 ${addr}`;
+    if (building) modeBlock += `\n🏢 ${building}`;
+    if (code)     modeBlock += `\n🔔 Code : ${code}`;
+    if (phone)    modeBlock += `\n📞 ${phone}`;
+  }
+
+  return (
+    `🛍️ Commande ${STORE_NAME}\n` +
+    `${'─'.repeat(28)}\n\n` +
+    `${lines}\n\n` +
+    `${modeBlock}\n\n` +
+    `👤 ${username}\n\n` +
+    `💰 Total : ${fmt(cartTotal())}`
+  );
+}
+
+function renderShare() {
+  $('drawerTitle').textContent = '📨 Envoyer la commande';
   const msg = buildMessage();
 
   $('drawerBody').innerHTML = `
-    <div class="slabel" style="margin-bottom:8px">Votre message prêt à envoyer</div>
-    <div class="msg-box" id="msgBox">${escHtml(msg)}</div>
-    <div class="copy-row" onclick="copyMsg()">
-      <span>📋</span><span id="copyLabel">Appuyer pour copier le message</span>
-    </div>
-    <div class="slabel">Envoyer via</div>
-  `;
-
-  $('drawerFooter').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-tg" onclick="sendViaTelegram()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
-        Telegram — @${ADMIN_TG}
+    <div class="slabel" style="margin-bottom:10px">Aperçu du message</div>
+    <div class="msg-preview" id="msgPreview">${msg}</div>
+    <div class="slabel" style="margin-bottom:12px">Choisissez comment envoyer</div>
+    <div class="share-btns">
+      <button class="sbtn sbtn-tg" onclick="sendViaTelegram()">
+        <span class="sbtn-icon">✈️</span> Envoyer via Telegram
       </button>
-      <button class="btn btn-wa" onclick="sendViaWhatsApp()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-        WhatsApp — +${ADMIN_WA}
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="copyMsg()">
-        📋 Copier le message
+      <button class="sbtn sbtn-wa" onclick="sendViaWhatsApp()">
+        <span class="sbtn-icon">💬</span> Envoyer via WhatsApp
       </button>
     </div>
   `;
+  $('drawerFoot').innerHTML = '';
 }
 
-// ── Construction du message ────────────────────────────────────────────────
-function buildMessage() {
-  const lines = cart.map(i =>
-    `• ${i.name} ×${i.qty} — ${fmt(i.price * i.qty)}`
-  ).join('\n');
-
-  let receptionBlock = '';
-  if (deliveryMode === 'meetup') {
-    receptionBlock = '🤝 Mode : MeetUp';
-  } else {
-    const address = ($('f-address')?.value || '').trim();
-    const bat     = ($('f-bat')?.value    || '').trim();
-    const code    = ($('f-code')?.value   || '').trim();
-    const phone   = ($('f-phone')?.value  || '').trim();
-    const modeLabel = deliveryMode === 'livraison' ? '🚗 Livraison' : '📦 Colis';
-    receptionBlock  = `${modeLabel}\nAdresse : ${address}`;
-    if (bat)   receptionBlock += `\nBâtiment : ${bat}`;
-    if (code)  receptionBlock += `\nInterphone : ${code}`;
-    if (phone) receptionBlock += `\nTéléphone : ${phone}`;
-  }
-
-  const username = tgUser?.username
-    ? `@${tgUser.username}`
-    : (tgUser?.first_name || 'Non renseigné');
-
-  return [
-    `📦 Commande ${STORE_NAME}`,
-    ``,
-    `🛍️ Articles :`,
-    lines,
-    ``,
-    receptionBlock,
-    ``,
-    `👤 ${username}`,
-    ``,
-    `💰 Total : ${fmt(cartTotal())}`,
-  ].join('\n');
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ── Actions d'envoi ────────────────────────────────────────────────────────
-function copyMsg() {
+async function sendViaTelegram() {
   const msg = buildMessage();
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(msg).then(() => {
-      toast('✅ Copié !');
-      const lbl = $('copyLabel');
-      if (lbl) lbl.textContent = '✅ Message copié !';
-    }).catch(() => fallbackCopy(msg));
-  } else {
-    fallbackCopy(msg);
-  }
-}
+  // Copier dans le presse-papier
+  try { await navigator.clipboard.writeText(msg); } catch(e) {}
 
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity  = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  document.body.removeChild(ta);
-  toast('✅ Copié !');
-}
+  toast('✅ Message copié ! Ouverture du chat…', 2500);
 
-function sendViaTelegram() {
-  copyMsg();
-  const url = `https://t.me/${ADMIN_TG}`;
-  if (tg) {
-    tg.openTelegramLink(url);
-  } else {
-    window.open(url, '_blank');
-  }
-  setTimeout(() => showSuccess(), 600);
+  setTimeout(() => {
+    if (tg) {
+      tg.openTelegramLink(`https://t.me/${ADMIN_TG}`);
+    } else {
+      window.open(`https://t.me/${ADMIN_TG}`, '_blank');
+    }
+    goToStep('success');
+  }, 800);
 }
 
 function sendViaWhatsApp() {
@@ -498,30 +485,29 @@ function sendViaWhatsApp() {
   } else {
     window.open(url, '_blank');
   }
-  setTimeout(() => showSuccess(), 600);
+  goToStep('success');
 }
 
-function showSuccess() {
-  cart = [];
-  saveCart();
-  tg?.HapticFeedback?.notificationOccurred('success');
+// ── ÉTAPE 5 : Succès ───────────────────────────────────────────────────────
+function renderSuccess() {
   $('drawerTitle').textContent = '';
+  cart = []; saveCart();
+  tg?.HapticFeedback?.notificationOccurred('success');
+
   $('drawerBody').innerHTML = `
     <div class="success">
       <div class="success-icon">🎉</div>
       <div class="success-title">Commande envoyée !</div>
-      <br>
-      <div class="success-sub">
-        Votre commande a été transmise.<br>
-        Vous serez contacté rapidement par<br>
-        <strong>@${ADMIN_TG}</strong> pour confirmer.
+      <div class="success-sub" style="margin-top:10px">
+        Votre commande a été transmise à ${STORE_NAME}.<br>
+        Vous serez contacté très rapidement pour confirmer.<br><br>
+        Merci pour votre confiance ☕
       </div>
     </div>
   `;
-  $('drawerFooter').innerHTML = `
-    <button class="btn btn-ghost" onclick="closeDrawer()">Retour à la boutique</button>
+  $('drawerFoot').innerHTML = `
+    <button class="abtn abtn-primary" onclick="closeDrawer()">Retour à la boutique</button>
   `;
-  tg?.BackButton.hide();
 }
 
 // ── Produits ───────────────────────────────────────────────────────────────
@@ -531,7 +517,7 @@ async function loadProducts() {
     if (!r.ok) throw new Error();
     products = await r.json();
   } catch {
-    products = demo();
+    products = demoProducts();
   }
   buildCats();
   renderProducts(products);
@@ -540,7 +526,7 @@ async function loadProducts() {
   if (pid) { const p = products.find(x => x.id == pid); if (p) addToCart(p); }
 }
 
-function demo() {
+function demoProducts() {
   return [
     {id:1,name:'iPhone 15 Pro',description:'Titane. Le plus pro.',price:1299,image_url:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',category_name:'Électronique',category_emoji:'📱'},
     {id:2,name:'AirPods Pro 2',description:'Réduction de bruit active.',price:279,image_url:'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400',category_name:'Électronique',category_emoji:'📱'},
@@ -549,7 +535,7 @@ function demo() {
     {id:5,name:'Hoodie Premium',description:'Coton brossé 400g.',price:89,image_url:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400',category_name:'Mode',category_emoji:'👗'},
     {id:6,name:'Montre Classique',description:'Mouvement automatique.',price:349,image_url:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',category_name:'Mode',category_emoji:'👗'},
     {id:7,name:'Lampe Neon LED',description:'RGB 16M couleurs.',price:59,image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',category_name:'Maison',category_emoji:'🏠'},
-    {id:8,name:'Cafetière Espresso',description:'15 bars.',price:199,image_url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',category_name:'Maison',category_emoji:'🏠'},
+    {id:8,name:'Cafetière Espresso',description:'15 bars de pression.',price:199,image_url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',category_name:'Maison',category_emoji:'🏠'},
     {id:9,name:'Diffuseur Huiles',description:'Aromathérapie 500ml.',price:45,image_url:'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400',category_name:'Maison',category_emoji:'🏠'},
   ];
 }
@@ -560,8 +546,7 @@ function buildCats() {
   const c = $('cats');
   seen.forEach((p, name) => {
     const el = document.createElement('div');
-    el.className  = 'chip';
-    el.dataset.cat = name;
+    el.className = 'chip'; el.dataset.cat = name;
     el.textContent = `${p.category_emoji} ${name}`;
     el.addEventListener('click', () => setFilter(name));
     c.appendChild(el);
@@ -578,16 +563,17 @@ function setFilter(cat) {
 
 function applyFilter() {
   const q = $('search').value.trim().toLowerCase();
-  renderProducts(products.filter(p =>
-    (!activeCat || p.category_name === activeCat) &&
-    (!q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q))
-  ));
+  renderProducts(products.filter(p => {
+    const mc = !activeCat || p.category_name === activeCat;
+    const mq = !q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
+    return mc && mq;
+  }));
 }
 
 function renderProducts(list) {
   const el = $('main');
   if (!list.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div>Aucun produit trouvé</div></div>`;
+    el.innerHTML = `<div class="empty"><div style="font-size:44px">🔍</div><div style="color:var(--hint);margin-top:8px">Aucun produit trouvé</div></div>`;
     return;
   }
   el.innerHTML = `<div class="grid">${list.map((p,i) => `
@@ -605,7 +591,6 @@ function renderProducts(list) {
 $('cats').querySelector('[data-cat=""]').addEventListener('click', () => setFilter(''));
 let st;
 $('search').addEventListener('input', () => { clearTimeout(st); st = setTimeout(applyFilter, 200); });
-
 loadProducts();
 </script>
 </body>
