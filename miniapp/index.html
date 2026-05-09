@@ -471,17 +471,30 @@ async function sendViaTelegram() {
     .replace('\n' + '─'.repeat(28), '*\n' + '─'.repeat(28));
 
   try {
-    const res  = await fetch(`${API}/api/notify`, {
+    const res = await fetch(`${API}/api/notify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: msg })
     });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
     goToStep('success');
   } catch(e) {
-    toast('❌ Erreur : ' + e.message, 3000);
-    if (btn) { btn.disabled = false; btn.innerHTML = '<span class="sbtn-icon">✈️</span> Envoyer via Telegram'; }
+    // Afficher l'erreur précise + fallback WhatsApp visible
+    console.error('Telegram notify error:', e);
+    const errMsg = e.message === 'Failed to fetch'
+      ? 'Impossible de joindre le serveur. Utilisez WhatsApp.'
+      : '❌ ' + e.message;
+    toast(errMsg, 4000);
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="sbtn-icon">✈️</span> Envoyer via Telegram';
+    }
   }
 }
 

@@ -32,7 +32,7 @@ app.post('/api/notify', async (req, res) => {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'message requis' });
     if (!ADMIN_TG_ID) return res.status(503).json({ error: 'ADMIN_TG_ID non configuré' });
-    await bot.telegram.sendMessage(ADMIN_TG_ID, message, { parse_mode: 'Markdown' });
+    await bot.telegram.sendMessage(ADMIN_TG_ID, message);
     res.json({ ok: true });
   } catch(e) {
     console.error('notify error:', e.message);
