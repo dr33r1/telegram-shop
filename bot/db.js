@@ -1,4 +1,4 @@
-// db.js — SQLite via sql.js (WebAssembly, sans compilation native)
+// db.js — SQLite via sql.js (wasm auto-résolu, compatible local + Railway)
 import initSqlJs from 'sql.js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -7,10 +7,22 @@ import path from 'path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH   = path.join(__dirname, 'shop.db');
 
+// Résoudre le fichier WASM : chercher dans bot/node_modules puis node_modules racine
+function findWasm() {
+  const candidates = [
+    path.join(__dirname, 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm'),
+    path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm'),
+  ];
+  for (const p of candidates) {
+    if (existsSync(p)) return readFileSync(p);
+  }
+  return undefined; // sql.js trouvera le wasm tout seul en dernier recours
+}
+
 let db;
 
 export async function initDb() {
-  const SQL    = await initSqlJs();
+  const SQL    = await initSqlJs({ wasmBinary: findWasm() });
   const buffer = existsSync(DB_PATH) ? readFileSync(DB_PATH) : null;
   db           = buffer ? new SQL.Database(buffer) : new SQL.Database();
 
@@ -92,9 +104,8 @@ export function run(sql, p=[]) {
   return { lastInsertRowid: id };
 }
 
-export const upsertUser = ({tg_id, username, first_name}) =>
+export const upsertUser      = ({tg_id, username, first_name}) =>
   run('INSERT INTO users (tg_id,username,first_name) VALUES (?,?,?) ON CONFLICT(tg_id) DO UPDATE SET username=excluded.username, first_name=excluded.first_name',[tg_id,username,first_name]);
-
 export const getCategories    = ()      => all('SELECT * FROM categories ORDER BY name');
 export const getProducts      = ()      => all('SELECT p.*,c.name AS category_name,c.emoji AS category_emoji FROM products p JOIN categories c ON c.id=p.category_id WHERE p.active=1 ORDER BY c.name,p.name');
 export const getProductsByCat = (catId) => all('SELECT * FROM products WHERE category_id=? AND active=1',[catId]);
