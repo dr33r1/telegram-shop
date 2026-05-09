@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Boutique</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f11;--surface:#1a1a1f;--surface2:#22222a;
+  --text:#f0f0f0;--hint:#888;--accent:#5c67f2;--danger:#ff4d4f;
+  --success:#52c41a;--warning:#faad14;--radius:10px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh}
+
+/* ── Layout ── */
+.topbar{background:var(--surface);padding:14px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:50}
+.topbar h1{font-size:17px;font-weight:700;flex:1}
+.badge{background:var(--accent);color:#fff;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700}
+
+.layout{display:grid;grid-template-columns:200px 1fr;height:calc(100vh - 53px)}
+
+/* ── Sidebar ── */
+.sidebar{background:var(--surface);border-right:1px solid rgba(255,255,255,.07);padding:16px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--hint);font-weight:500;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(92,103,242,.08)}
+.nav-item .icon{font-size:18px;width:22px;text-align:center}
+
+/* ── Main ── */
+.main{overflow-y:auto;padding:24px}
+
+.section{display:none}
+.section.active{display:block}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:18px;font-weight:700}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-ghost{background:rgba(255,255,255,.08);color:var(--text)}
+
+/* ── Table ── */
+.table-wrap{background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.07)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--surface2);padding:10px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--hint);text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 14px;border-top:1px solid rgba(255,255,255,.05);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.product-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;background:#333}
+
+/* ── Status badge ── */
+.status{display:inline-block;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
+.status-pending{background:rgba(250,173,20,.15);color:var(--warning)}
+.status-paid{background:rgba(82,196,26,.15);color:var(--success)}
+.status-shipped{background:rgba(92,103,242,.15);color:var(--accent)}
+.status-cancelled{background:rgba(255,77,79,.15);color:var(--danger)}
+.status-inactive{background:rgba(255,255,255,.08);color:var(--hint)}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:14px;padding:24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:20px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+
+/* ── Form ── */
+.form-group{margin-bottom:14px}
+label{display:block;font-size:12px;font-weight:600;color:var(--hint);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+input,textarea,select{
+  width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;
+  transition:border-color .15s;font-family:inherit
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,.07)}
+.stat-value{font-size:26px;font-weight:800;margin-bottom:2px}
+.stat-label{font-size:12px;color:var(--hint)}
+
+/* ── Login ── */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--surface);border-radius:14px;padding:32px;width:100%;max-width:360px;text-align:center}
+.login-icon{font-size:48px;margin-bottom:16px}
+.login-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.login-sub{color:var(--hint);font-size:13px;margin-bottom:24px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);color:var(--text);padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(20px);opacity:0;transition:all .25s;z-index:500;border-left:4px solid var(--accent)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-left-color:var(--danger)}
+
+/* ── Img preview ── */
+.img-preview{width:80px;height:80px;border-radius:8px;object-fit:cover;margin-top:8px;background:var(--surface2);border:1px solid rgba(255,255,255,.1)}
+
+/* ── Loader ── */
+.loader-row td{text-align:center;color:var(--hint);padding:40px}
+
+@media(max-width:640px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ─────────────────────────────────────────────────────────────── -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">Espace Admin</div>
+    <div class="login-sub">Entrez le token administrateur</div>
+    <div class="form-group" style="text-align:left">
+      <label>Admin Token</label>
+      <input type="password" id="tokenInput" placeholder="Votre token secret..." />
+    </div>
+    <input type="text" id="apiInput" placeholder="URL API (ex: https://xxx.railway.app)" style="margin-bottom:14px;width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none"/>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="login()">Connexion →</button>
+  </div>
+</div>
+
+<!-- ── APP ───────────────────────────────────────────────────────────────── -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <h1>🛍️ Admin Boutique</h1>
+    <span class="badge" id="apiLabel">API</span>
+    <button class="btn btn-ghost btn-sm" onclick="logout()">Déconnexion</button>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-item active" data-section="dashboard" onclick="showSection('dashboard',this)">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-section="products" onclick="showSection('products',this)">
+        <span class="icon">📦</span> Produits
+      </div>
+      <div class="nav-item" data-section="categories" onclick="showSection('categories',this)">
+        <span class="icon">📂</span> Catégories
+      </div>
+      <div class="nav-item" data-section="orders" onclick="showSection('orders',this)">
+        <span class="icon">📋</span> Commandes
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <div class="main">
+
+      <!-- Dashboard -->
+      <div class="section active" id="section-dashboard">
+        <div class="section-header">
+          <div class="section-title">Dashboard</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAll()">🔄 Actualiser</button>
+        </div>
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-value" id="statProducts">—</div>
+            <div class="stat-label">Produits actifs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statCategories">—</div>
+            <div class="stat-label">Catégories</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statOrders">—</div>
+            <div class="stat-label">Commandes total</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statRevenue">—</div>
+            <div class="stat-label">Chiffre d'affaires</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dernières commandes</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+            <tbody id="recentOrders"><tr class="loader-row"><td colspan="4">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Produits -->
+      <div class="section" id="section-products">
+        <div class="section-header">
+          <div class="section-title">Produits</div>
+          <button class="btn btn-primary" onclick="openProductModal()">+ Nouveau produit</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Photo</th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="productsTable"><tr class="loader-row"><td colspan="7">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Catégories -->
+      <div class="section" id="section-categories">
+        <div class="section-header">
+          <div class="section-title">Catégories</div>
+          <button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle catégorie</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Emoji</th><th>Nom</th><th>Produits</th><th>Actions</th></tr></thead>
+            <tbody id="catsTable"><tr class="loader-row"><td colspan="4">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Commandes -->
+      <div class="section" id="section-orders">
+        <div class="section-header">
+          <div class="section-title">Commandes</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadOrders()">🔄 Actualiser</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody id="ordersTable"><tr class="loader-row"><td colspan="7">Chargement...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div><!-- /app -->
+
+<!-- ── MODAL PRODUIT ──────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-title" id="productModalTitle">Nouveau produit</div>
+    <div class="form-group">
+      <label>Nom du produit *</label>
+      <input type="text" id="pName" placeholder="Ex: iPhone 15 Pro"/>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="pDesc" placeholder="Description courte du produit..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prix (€) *</label>
+        <input type="number" id="pPrice" placeholder="0.00" step="0.01" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" id="pStock" placeholder="999" min="0"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select id="pCat"></select>
+    </div>
+    <div class="form-group">
+      <label>URL de l'image</label>
+      <input type="url" id="pImg" placeholder="https://..." oninput="previewImg(this.value)"/>
+      <img id="imgPreview" class="img-preview" src="" alt="" style="display:none"/>
+    </div>
+    <div class="form-group" id="pActiveGroup" style="display:none">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="pActive" style="width:auto"/> Produit actif (visible dans la boutique)
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeProductModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveProduct()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CATÉGORIE ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">Nouvelle catégorie</div>
+    <div class="form-group">
+      <label>Nom *</label>
+      <input type="text" id="cName" placeholder="Ex: Électronique"/>
+    </div>
+    <div class="form-group">
+      <label>Emoji</label>
+      <input type="text" id="cEmoji" placeholder="📦" maxlength="4"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCatModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveCat()">💾 Créer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let API_BASE = '', ADMIN_TOKEN = '';
+let products = [], categories = [], orders = [];
+let editingProductId = null;
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+function login() {
+  const token = document.getElementById('tokenInput').value.trim();
+  const api   = document.getElementById('apiInput').value.trim().replace(/\/$/, '');
+  if (!token || !api) return toast('Token et URL API requis', true);
+  ADMIN_TOKEN = token;
+  API_BASE    = api;
+  localStorage.setItem('admin_token', token);
+  localStorage.setItem('admin_api',   api);
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('apiLabel').textContent = new URL(api).hostname;
+  loadAll();
+}
+
+function logout() {
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_api');
+  location.reload();
+}
+
+// Auto-login si token enregistré
+window.addEventListener('DOMContentLoaded', () => {
+  const t = localStorage.getItem('admin_token');
+  const a = localStorage.getItem('admin_api');
+  if (t && a) {
+    document.getElementById('tokenInput').value = t;
+    document.getElementById('apiInput').value   = a;
+    login();
+  }
+});
+
+// ── API helper ────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const res = await fetch(`${API_BASE}/admin/api${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'products')   renderProducts();
+  if (name === 'categories') renderCategories();
+  if (name === 'orders')     loadOrders();
+}
+
+// ── Chargement ────────────────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    [products, categories, orders] = await Promise.all([
+      api('GET', '/products'),
+      api('GET', '/categories'),
+      api('GET', '/orders')
+    ]);
+    renderDashboard();
+    renderProducts();
+    renderCategories();
+    renderOrders();
+  } catch(e) { toast('Erreur de connexion : ' + e.message, true); }
+}
+
+async function loadOrders() {
+  try { orders = await api('GET', '/orders'); renderOrders(); } catch(e) { toast(e.message, true); }
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const active = products.filter(p => p.active);
+  const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s,o) => s + (o.total||0), 0);
+  document.getElementById('statProducts').textContent   = active.length;
+  document.getElementById('statCategories').textContent = categories.length;
+  document.getElementById('statOrders').textContent     = orders.length;
+  document.getElementById('statRevenue').textContent    = fmt(revenue);
+
+  const tbody = document.getElementById('recentOrders');
+  if (!orders.length) { tbody.innerHTML = '<tr class="loader-row"><td colspan="4">Aucune commande</td></tr>'; return; }
+  tbody.innerHTML = orders.slice(0, 8).map(o => `
+    <tr>
+      <td>#${o.id} <span style="color:var(--hint);font-size:12px">${o.created_at?.slice(0,10)}</span></td>
+      <td>${o.first_name || '—'} ${o.username ? '@'+o.username : ''}</td>
+      <td style="font-weight:700">${fmt(o.total)}</td>
+      <td><span class="status status-${o.status}">${o.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ── Produits ──────────────────────────────────────────────────────────────
+function renderProducts() {
+  const tbody = document.getElementById('productsTable');
+  if (!products.length) { tbody.innerHTML = '<tr class="loader-row"><td colspan="7">Aucun produit</td></tr>'; return; }
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td><img class="product-thumb" src="${p.image_url||''}" onerror="this.src=''" alt=""/></td>
+      <td><strong>${p.name}</strong><br><span style="color:var(--hint);font-size:12px">${(p.description||'').slice(0,50)}</span></td>
+      <td>${p.category_emoji||''} ${p.category_name||''}</td>
+      <td style="font-weight:700;color:var(--accent)">${fmt(p.price)}</td>
+      <td>${p.stock}</td>
+      <td><span class="status ${p.active ? 'status-paid' : 'status-inactive'}">${p.active ? 'Actif' : 'Inactif'}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="editProduct(${p.id})">✏️ Éditer</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="deleteProduct(${p.id})">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── Catégories ────────────────────────────────────────────────────────────
+function renderCategories() {
+  const tbody = document.getElementById('catsTable');
+  if (!categories.length) { tbody.innerHTML = '<tr class="loader-row"><td colspan="4">Aucune catégorie</td></tr>'; return; }
+  tbody.innerHTML = categories.map(c => {
+    const count = products.filter(p => p.category_id == c.id).length;
+    return `<tr>
+      <td style="font-size:22px">${c.emoji}</td>
+      <td><strong>${c.name}</strong></td>
+      <td>${count} produit(s)</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="alert('Édition catégorie à venir')">✏️</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Commandes ─────────────────────────────────────────────────────────────
+const STATUS_OPTIONS = ['pending','paid','shipped','cancelled'];
+
+function renderOrders() {
+  const tbody = document.getElementById('ordersTable');
+  if (!orders.length) { tbody.innerHTML = '<tr class="loader-row"><td colspan="7">Aucune commande</td></tr>'; return; }
+  tbody.innerHTML = orders.map(o => {
+    const items = JSON.parse(o.items_json||'[]');
+    return `<tr>
+      <td>#${o.id}</td>
+      <td>${o.first_name||'—'}<br><span style="color:var(--hint);font-size:11px">${o.username?'@'+o.username:''}</span></td>
+      <td style="font-size:12px;color:var(--hint)">${items.map(i=>i.name+'×'+i.qty).join(', ')}</td>
+      <td style="font-weight:700">${fmt(o.total)}</td>
+      <td style="font-size:12px;color:var(--hint)">${o.created_at?.slice(0,10)}</td>
+      <td><span class="status status-${o.status}">${o.status}</span></td>
+      <td>
+        <select onchange="updateOrderStatus(${o.id},this.value)" style="background:var(--surface2);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 8px;color:var(--text);font-size:12px">
+          ${STATUS_OPTIONS.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateOrderStatus(id, status) {
+  try {
+    await api('PUT', `/orders/${id}`, { status });
+    const o = orders.find(x => x.id === id);
+    if (o) o.status = status;
+    toast('Statut mis à jour ✅');
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
+}
+
+// ── Modal Produit ─────────────────────────────────────────────────────────
+function openProductModal(p = null) {
+  editingProductId = p?.id || null;
+  document.getElementById('productModalTitle').textContent = p ? '✏️ Modifier le produit' : '➕ Nouveau produit';
+  document.getElementById('pName').value  = p?.name        || '';
+  document.getElementById('pDesc').value  = p?.description || '';
+  document.getElementById('pPrice').value = p?.price       || '';
+  document.getElementById('pStock').value = p?.stock       || '999';
+  document.getElementById('pImg').value   = p?.image_url   || '';
+  document.getElementById('pActive').checked = p ? !!p.active : true;
+  document.getElementById('pActiveGroup').style.display = p ? 'block' : 'none';
+  previewImg(p?.image_url || '');
+
+  // Remplir les catégories
+  const sel = document.getElementById('pCat');
+  sel.innerHTML = categories.map(c => `<option value="${c.id}" ${c.id==p?.category_id?'selected':''}>${c.emoji} ${c.name}</option>`).join('');
+
+  document.getElementById('productModal').classList.add('open');
+}
+
+function editProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (p) openProductModal(p);
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('open');
+  editingProductId = null;
+}
+
+async function saveProduct() {
+  const body = {
+    name:        document.getElementById('pName').value.trim(),
+    description: document.getElementById('pDesc').value.trim(),
+    price:       parseFloat(document.getElementById('pPrice').value),
+    stock:       parseInt(document.getElementById('pStock').value)||999,
+    category_id: parseInt(document.getElementById('pCat').value),
+    image_url:   document.getElementById('pImg').value.trim(),
+    active:      document.getElementById('pActive').checked ? 1 : 0,
+  };
+  if (!body.name || isNaN(body.price)) return toast('Nom et prix requis', true);
+
+  try {
+    if (editingProductId) {
+      await api('PUT', `/products/${editingProductId}`, body);
+      toast('Produit mis à jour ✅');
+    } else {
+      await api('POST', '/products', body);
+      toast('Produit créé ✅');
+    }
+    closeProductModal();
+    products = await api('GET', '/products');
+    renderProducts();
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Désactiver ce produit ? Il ne sera plus visible dans la boutique.')) return;
+  try {
+    await api('DELETE', `/products/${id}`);
+    toast('Produit désactivé');
+    products = await api('GET', '/products');
+    renderProducts();
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
+}
+
+function previewImg(url) {
+  const img = document.getElementById('imgPreview');
+  if (url) { img.src = url; img.style.display = 'block'; }
+  else { img.style.display = 'none'; }
+}
+
+// ── Modal Catégorie ───────────────────────────────────────────────────────
+function openCatModal() { document.getElementById('catModal').classList.add('open'); }
+function closeCatModal() { document.getElementById('catModal').classList.remove('open'); }
+
+async function saveCat() {
+  const name  = document.getElementById('cName').value.trim();
+  const emoji = document.getElementById('cEmoji').value.trim() || '📦';
+  if (!name) return toast('Nom requis', true);
+  try {
+    await api('POST', '/categories', { name, emoji });
+    toast('Catégorie créée ✅');
+    closeCatModal();
+    categories = await api('GET', '/categories');
+    products   = await api('GET', '/products');
+    renderCategories();
+  } catch(e) { toast(e.message, true); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+const fmt = n => Number(n||0).toLocaleString('fr-FR', { style:'currency', currency:'EUR' });
+
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'toast show' + (err ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Fermer les modals en cliquant l'overlay
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
