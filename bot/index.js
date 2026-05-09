@@ -9,26 +9,41 @@ import {
 } from './db.js';
 
 const BOT_TOKEN    = process.env.BOT_TOKEN;
-const MINI_APP_URL = process.env.MINI_APP_URL || 'https://your-domain.com/shop';
+const MINI_APP_URL = process.env.MINI_APP_URL || 'https://dr33r1.github.io/telegram-shop/index.html';
 const PORT         = parseInt(process.env.PORT || '3000');
 
 if (!BOT_TOKEN) { console.error('❌ BOT_TOKEN manquant'); process.exit(1); }
 
-// ── Démarrage async ───────────────────────────────────────────────────────
-await initDb();
-
-const bot = new Telegraf(BOT_TOKEN);
+// ── 1. EXPRESS EN PREMIER — répond au healthcheck immédiatement ───────────
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// ── Middleware user ───────────────────────────────────────────────────────
+// Healthcheck dispo dès le démarrage
+app.get('/health', (_,res) => res.json({ ok: true, ts: new Date().toISOString() }));
+
+// Démarrer le serveur HTTP AVANT tout le reste
+await new Promise(resolve => app.listen(PORT, () => {
+  console.log(`🚀 API en écoute sur le port ${PORT}`);
+  resolve();
+}));
+
+// ── 2. BASE DE DONNÉES ────────────────────────────────────────────────────
+await initDb();
+console.log('✅ Base de données prête');
+
+// ── 3. BOT TELEGRAM ───────────────────────────────────────────────────────
+const bot = new Telegraf(BOT_TOKEN);
+
 bot.use((ctx, next) => {
-  if (ctx.from) upsertUser({ tg_id: ctx.from.id, username: ctx.from.username||null, first_name: ctx.from.first_name||'Utilisateur' });
+  if (ctx.from) upsertUser({
+    tg_id: ctx.from.id,
+    username: ctx.from.username || null,
+    first_name: ctx.from.first_name || 'Utilisateur'
+  });
   return next();
 });
 
-// ── /start ────────────────────────────────────────────────────────────────
 bot.start(async (ctx) => {
   const name = ctx.from.first_name || 'là';
   await ctx.replyWithPhoto(
@@ -51,7 +66,6 @@ bot.command('shop', async (ctx) => {
   });
 });
 
-// ── Catégories ────────────────────────────────────────────────────────────
 async function showCats(ctx) {
   if (ctx.callbackQuery) await ctx.answerCbQuery();
   const cats = getCategories();
@@ -66,19 +80,17 @@ bot.action(/^cat_(\d+)$/, async (ctx) => {
   await ctx.answerCbQuery();
   const prods = getProductsByCat(parseInt(ctx.match[1]));
   if (!prods.length) return ctx.reply('Aucun produit dans cette catégorie.');
-  for (const p of prods.slice(0,4)) {
+  for (const p of prods.slice(0, 4)) {
     await ctx.replyWithPhoto({ url: p.image_url }, {
       caption: `*${p.name}*\n${p.description}\n\n💰 *${p.price.toFixed(2)} €*`,
       parse_mode: 'Markdown',
       ...Markup.inlineKeyboard([[Markup.button.webApp('🛒 Ajouter', `${MINI_APP_URL}?product=${p.id}`)]])
     });
   }
-  if (prods.length > 4) {
+  if (prods.length > 4)
     await ctx.reply(`_+ ${prods.length-4} autres..._`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.webApp('Voir tout', MINI_APP_URL)]]) });
-  }
 });
 
-// ── Commandes ─────────────────────────────────────────────────────────────
 const SE = { pending:'⏳', paid:'✅', shipped:'📦', cancelled:'❌' };
 
 async function showOrders(ctx) {
@@ -103,9 +115,9 @@ bot.command('help', showHelp);
 bot.action('help', showHelp);
 
 // ── API REST ──────────────────────────────────────────────────────────────
-app.get('/api/products',    (_,res) => res.json(getProducts()));
-app.get('/api/categories',  (_,res) => res.json(getCategories()));
-app.get('/api/products/:id',(req,res) => {
+app.get('/api/products',     (_,res) => res.json(getProducts()));
+app.get('/api/categories',   (_,res) => res.json(getCategories()));
+app.get('/api/products/:id', (req,res) => {
   const p = getProductById(parseInt(req.params.id));
   p ? res.json(p) : res.status(404).json({ error:'Introuvable' });
 });
@@ -131,13 +143,10 @@ app.post('/api/order', async (req, res) => {
   }
 });
 
-app.get('/health', (_,res) => res.json({ ok:true, ts:new Date().toISOString() }));
-
-// ── Lancement ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => console.log(`🚀 API sur http://localhost:${PORT}`));
-bot.launch({ dropPendingUpdates:true })
-   .then(() => console.log('🤖 Bot démarré'))
-   .catch(e => { console.error(e); process.exit(1); });
+// ── 4. LANCER LE BOT (après Express) ─────────────────────────────────────
+bot.launch({ dropPendingUpdates: true })
+   .then(() => console.log('🤖 Bot Telegram démarré'))
+   .catch(e => console.error('⚠️ Bot launch error (retrying automatically):', e.message));
 
 process.once('SIGINT',  () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
