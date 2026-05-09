@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Boutique</title>
+  <title>Coffee10</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:       var(--tg-theme-bg-color,#0f0f11);
-      --surface:  var(--tg-theme-secondary-bg-color,#1a1a1f);
-      --text:     var(--tg-theme-text-color,#f0f0f0);
-      --hint:     var(--tg-theme-hint-color,#888);
-      --accent:   var(--tg-theme-button-color,#6366f1);
-      --accentfg: var(--tg-theme-button-text-color,#fff);
-      --link:     var(--tg-theme-link-color,#818cf8);
-      --radius:   14px;
+      --bg:      var(--tg-theme-bg-color,#0f0f11);
+      --surface: var(--tg-theme-secondary-bg-color,#1a1a1f);
+      --text:    var(--tg-theme-text-color,#f0f0f0);
+      --hint:    var(--tg-theme-hint-color,#888);
+      --accent:  var(--tg-theme-button-color,#6366f1);
+      --accentfg:var(--tg-theme-button-text-color,#fff);
+      --link:    var(--tg-theme-link-color,#818cf8);
+      --radius:  14px;
     }
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.5;min-height:100dvh;padding-bottom:90px}
 
-    /* ── Header ── */
+    /* Header */
     .header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid rgba(255,255,255,.07);padding:12px 16px}
     .header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
     .store-title{font-size:20px;font-weight:800;flex:1}
@@ -32,15 +32,15 @@
     .search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:15px;width:100%}
     .search-bar input::placeholder{color:var(--hint)}
 
-    /* ── Categories ── */
+    /* Categories */
     .cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
     .cats::-webkit-scrollbar{display:none}
     .chip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1.5px solid transparent;border-radius:99px;padding:6px 14px;cursor:pointer;white-space:nowrap;font-size:13px;font-weight:600;transition:all .2s;user-select:none}
     .chip.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--link)}
 
-    /* ── Product grid ── */
+    /* Grid */
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px}
-    .card{background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .18s;animation:up .3s ease both}
+    .card{background:var(--surface);border-radius:var(--radius);overflow:hidden;transition:transform .18s;animation:up .3s ease both}
     .card:active{transform:scale(.96)}
     @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     .card img{width:100%;aspect-ratio:1;object-fit:cover;background:#222}
@@ -50,84 +50,92 @@
     .card-btn{display:block;width:100%;margin-top:8px;background:var(--accent);color:var(--accentfg);border:none;border-radius:8px;padding:8px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s}
     .card-btn:active{opacity:.7}
 
-    /* ── Loader ── */
+    /* Loader / empty */
     .loader{display:flex;align-items:center;justify-content:center;height:200px}
     .spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* ── Empty ── */
     .empty{text-align:center;padding:60px 20px;color:var(--hint)}
     .empty-icon{font-size:44px;margin-bottom:10px}
 
-    /* ── Toast ── */
+    /* Toast */
     .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(20,20,30,.96);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:all .25s;z-index:300;white-space:nowrap}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* ── Drawer (panier + commande) ── */
+    /* Overlay + Drawer */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
     .overlay.on{opacity:1;pointer-events:all}
-    .drawer{position:fixed;left:0;right:0;bottom:0;z-index:101;background:var(--surface);border-radius:22px 22px 0 0;padding:0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);max-height:88dvh;display:flex;flex-direction:column}
+    .drawer{position:fixed;left:0;right:0;bottom:0;z-index:101;background:var(--surface);border-radius:22px 22px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);max-height:90dvh;display:flex;flex-direction:column}
     .drawer.on{transform:translateY(0)}
-    .drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin:14px auto 0}
-    .drawer-header{padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin:14px auto 0;flex-shrink:0}
+    .drawer-header{padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
     .drawer-title{font-size:17px;font-weight:800}
     .drawer-body{overflow-y:auto;flex:1;padding:16px 18px}
-    .drawer-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+    .drawer-footer{padding:12px 18px 20px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
 
-    /* ── Cart items ── */
-    .ci{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    /* Cart items */
+    .ci{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .ci img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#333}
-    .ci-info{flex:1}
-    .ci-name{font-size:13px;font-weight:700;margin-bottom:2px}
-    .ci-price{font-size:12px;color:var(--hint)}
-    .qty{display:flex;align-items:center;gap:8px}
+    .ci-info{flex:1;min-width:0}
+    .ci-name{font-size:13px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ci-sub{font-size:12px;color:var(--hint)}
+    .qty{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .qty-btn{width:30px;height:30px;background:var(--bg);border:none;border-radius:8px;color:var(--text);font-size:19px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
     .qty-n{font-size:15px;font-weight:800;min-width:22px;text-align:center}
-
-    /* ── Total row ── */
-    .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700;font-size:15px}
+    .total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:4px;font-weight:700}
     .total-amt{font-size:22px;font-weight:900;color:var(--link)}
 
-    /* ── Main button ── */
-    .main-btn{width:100%;background:var(--accent);color:var(--accentfg);border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.2px}
-    .main-btn:active{opacity:.8}
-    .main-btn:disabled{opacity:.45;cursor:default}
+    /* Buttons */
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:var(--radius);padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:opacity .15s;letter-spacing:.2px}
+    .btn:active{opacity:.75}
+    .btn:disabled{opacity:.4;cursor:default}
+    .btn-accent{background:var(--accent);color:var(--accentfg)}
+    .btn-ghost{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+    .btn-tg{background:#2AABEE;color:#fff}
+    .btn-wa{background:#25D366;color:#fff}
+    .btn-sm{padding:10px 14px;font-size:14px;border-radius:10px}
 
-    /* ── Step tabs ── */
-    .steps{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:18px}
-    .step-tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:700;color:var(--hint);border-bottom:2px solid transparent;transition:all .2s;cursor:default}
-    .step-tab.on{color:var(--link);border-bottom-color:var(--accent)}
-
-    /* ── Delivery choice ── */
-    .delivery-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-    .dopt{display:flex;align-items:center;gap:14px;background:var(--bg);border:2px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .2s}
+    /* Delivery options */
+    .dopt{display:flex;align-items:center;gap:14px;background:var(--bg);border:2px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:15px;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:10px;user-select:none}
     .dopt.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
-    .dopt-icon{font-size:28px;flex-shrink:0}
-    .dopt-label{font-size:15px;font-weight:700}
+    .dopt-icon{font-size:26px;flex-shrink:0;width:36px;text-align:center}
+    .dopt-title{font-size:15px;font-weight:700}
     .dopt-sub{font-size:12px;color:var(--hint);margin-top:2px}
 
-    /* ── Form fields ── */
-    .fgroup{margin-bottom:14px}
-    .fgroup label{display:block;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-    .fgroup input,.fgroup textarea,.fgroup select{width:100%;background:var(--bg);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;outline:none;font-family:inherit;transition:border-color .2s}
-    .fgroup input:focus,.fgroup textarea:focus{border-color:var(--accent)}
-    .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    /* Form */
+    .fgroup{margin-bottom:12px}
+    .fgroup label{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .req{color:#ef4444;font-size:10px}
+    .opt{color:var(--hint);font-size:9px;font-weight:600;background:rgba(255,255,255,.08);border-radius:4px;padding:1px 5px;letter-spacing:.3px}
+    .fgroup input{width:100%;background:var(--bg);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+    .fgroup input:focus{border-color:var(--accent)}
+    .fgroup input::placeholder{color:var(--hint)}
 
-    /* ── Success ── */
-    .success-screen{text-align:center;padding:40px 20px}
-    .success-icon{font-size:64px;margin-bottom:16px;animation:pop .4s cubic-bezier(.36,.07,.19,.97)}
+    /* Order message box */
+    .msg-box{background:var(--bg);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text);max-height:200px;overflow-y:auto;margin-bottom:14px;font-family:monospace}
+    .copy-row{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--hint);margin-bottom:16px;cursor:pointer}
+    .copy-row:active{opacity:.6}
+
+    /* Section label */
+    .slabel{font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+
+    /* Success */
+    .success{text-align:center;padding:30px 10px}
+    .success-icon{font-size:60px;margin-bottom:14px;animation:pop .4s cubic-bezier(.36,.07,.19,.97)}
     @keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
-    .success-title{font-size:22px;font-weight:900;margin-bottom:8px}
-    .success-sub{color:var(--hint);font-size:14px;line-height:1.6}
-    .success-num{font-size:32px;font-weight:900;color:var(--link);margin:16px 0}
+    .success-title{font-size:21px;font-weight:900;margin-bottom:6px}
+    .success-sub{color:var(--hint);font-size:13px;line-height:1.7}
+
+    /* Recap mini */
+    .recap{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px}
+    .recap-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
+    .recap-total{display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid rgba(255,255,255,.08);margin-top:8px;padding-top:8px}
   </style>
 </head>
 <body>
 
-<!-- Header -->
 <header class="header">
   <div class="header-top">
-    <span class="store-title">🛍️ Boutique</span>
+    <span class="store-title">☕ Coffee10</span>
     <button class="cart-btn" id="cartBtn">🛒<span class="cart-badge" id="badge">0</span></button>
   </div>
   <div class="search-bar">
@@ -136,32 +144,28 @@
   </div>
 </header>
 
-<!-- Categories -->
 <div class="cats" id="cats">
   <div class="chip on" data-cat="">✨ Tout</div>
 </div>
 
-<!-- Products -->
 <main id="main"><div class="loader"><div class="spin"></div></div></main>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Overlay -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 
-<!-- Drawer -->
 <div class="drawer" id="drawer">
   <div class="drawer-handle"></div>
-  <div class="drawer-header">
-    <div class="drawer-title" id="drawerTitle">🛒 Mon panier</div>
-  </div>
+  <div class="drawer-header"><div class="drawer-title" id="drawerTitle">🛒 Mon panier</div></div>
   <div class="drawer-body" id="drawerBody"></div>
   <div class="drawer-footer" id="drawerFooter"></div>
 </div>
 
 <script>
-// ── Init Telegram ──────────────────────────────────────────────────────────
+// ── Config ─────────────────────────────────────────────────────────────────
+const STORE_NAME   = 'Coffee10';
+const ADMIN_TG     = 'Thecoffee10';       // username sans @
+const ADMIN_WA     = '33746772435';        // format international sans +
+
 const tg     = window.Telegram?.WebApp;
 const tgUser = tg?.initDataUnsafe?.user || null;
 if (tg) { tg.ready(); tg.expand(); tg.enableClosingConfirmation(); }
@@ -169,13 +173,16 @@ if (tg) { tg.ready(); tg.expand(); tg.enableClosingConfirmation(); }
 const API = new URLSearchParams(location.search).get('api') || 'http://localhost:3000';
 
 // ── State ──────────────────────────────────────────────────────────────────
-let products = [], activeCat = '', cart = JSON.parse(localStorage.getItem('tg_cart')||'[]');
-let drawerMode = 'cart'; // 'cart' | 'checkout' | 'success'
-let deliveryMode = ''; // 'pickup' | 'delivery'
+let products = [], activeCat = '';
+let cart     = JSON.parse(localStorage.getItem('tg_cart') || '[]');
+let mode     = 'cart'; // cart | delivery-choice | form | send
+let deliveryMode = ''; // meetup | livraison | colis
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-const $  = id => document.getElementById(id);
-const fmt = n  => Number(n).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+const $   = id => document.getElementById(id);
+const fmt = n  => Number(n).toLocaleString('fr-FR', {style:'currency', currency:'EUR'});
+const cartTotal = () => cart.reduce((s,i) => s + i.price * i.qty, 0);
+const cartCount = () => cart.reduce((s,i) => s + i.qty, 0);
 
 function toast(msg, ms=2200) {
   const t = $('toast');
@@ -184,16 +191,13 @@ function toast(msg, ms=2200) {
   setTimeout(() => t.classList.remove('on'), ms);
 }
 
-function cartTotal() { return cart.reduce((s,i) => s+i.price*i.qty, 0); }
-function cartCount() { return cart.reduce((s,i) => s+i.qty, 0); }
-
 function saveCart() {
   localStorage.setItem('tg_cart', JSON.stringify(cart));
-  const c = cartCount();
-  $('badge').textContent = c;
-  $('badge').classList.toggle('on', c > 0);
+  const n = cartCount();
+  $('badge').textContent = n;
+  $('badge').classList.toggle('on', n > 0);
   if (tg) {
-    if (c > 0) { tg.MainButton.setText(`🛒 Panier · ${fmt(cartTotal())}`); tg.MainButton.show(); }
+    if (n > 0) { tg.MainButton.setText(`🛒 Panier · ${fmt(cartTotal())}`); tg.MainButton.show(); }
     else tg.MainButton.hide();
   }
 }
@@ -212,49 +216,50 @@ function changeQty(id, d) {
   cart[i].qty += d;
   if (cart[i].qty <= 0) cart.splice(i, 1);
   saveCart();
-  if (drawerMode === 'cart') renderCart();
+  renderCart();
 }
 
 // ── Drawer ─────────────────────────────────────────────────────────────────
-function openDrawer(mode='cart') {
-  drawerMode = mode;
+function openDrawer() {
+  mode = 'cart';
+  deliveryMode = '';
   $('overlay').classList.add('on');
   $('drawer').classList.add('on');
-  if (mode === 'cart') renderCart();
+  renderCart();
   tg?.BackButton.show();
 }
-
 function closeDrawer() {
   $('overlay').classList.remove('on');
   $('drawer').classList.remove('on');
   tg?.BackButton.hide();
-  deliveryMode = '';
 }
 
-$('cartBtn').addEventListener('click', () => openDrawer('cart'));
-tg?.MainButton.onClick(() => openDrawer('cart'));
+$('cartBtn').addEventListener('click', openDrawer);
+tg?.MainButton.onClick(openDrawer);
 tg?.BackButton.onClick(() => {
-  if (drawerMode === 'checkout') { openDrawer('cart'); }
-  else closeDrawer();
+  if (mode === 'delivery-choice' || mode === 'form' || mode === 'send') {
+    if (mode === 'form' || mode === 'send') { mode = 'delivery-choice'; renderDeliveryChoice(); }
+    else { mode = 'cart'; renderCart(); }
+  } else closeDrawer();
 });
 
-// ── Panier ─────────────────────────────────────────────────────────────────
+// ── 1. PANIER ──────────────────────────────────────────────────────────────
 function renderCart() {
-  drawerMode = 'cart';
+  mode = 'cart';
   $('drawerTitle').textContent = '🛒 Mon panier';
 
   if (!cart.length) {
-    $('drawerBody').innerHTML = `<div class="empty"><div class="empty-icon">🧺</div><div>Votre panier est vide</div></div>`;
+    $('drawerBody').innerHTML = `<div class="empty"><div class="empty-icon">🧺</div><div style="color:var(--hint)">Votre panier est vide</div></div>`;
     $('drawerFooter').innerHTML = '';
     return;
   }
 
   $('drawerBody').innerHTML = cart.map(item => `
     <div class="ci">
-      <img src="${item.image_url||''}" onerror="this.src=''" alt="">
+      <img src="${item.image_url||''}" onerror="this.style.display='none'" alt="">
       <div class="ci-info">
         <div class="ci-name">${item.name}</div>
-        <div class="ci-price">${fmt(item.price)} / unité · <strong>${fmt(item.price*item.qty)}</strong></div>
+        <div class="ci-sub">${fmt(item.price)} × ${item.qty} = <strong>${fmt(item.price * item.qty)}</strong></div>
       </div>
       <div class="qty">
         <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
@@ -262,217 +267,259 @@ function renderCart() {
         <button class="qty-btn" onclick="changeQty(${item.id},+1)">+</button>
       </div>
     </div>
-  `).join('');
-
-  $('drawerFooter').innerHTML = `
+  `).join('') + `
     <div class="total-row">
       <span>Total</span>
       <span class="total-amt">${fmt(cartTotal())}</span>
     </div>
-    <button class="main-btn" onclick="openCheckout()">Passer la commande →</button>
-  `;
-}
-
-// ── Checkout ───────────────────────────────────────────────────────────────
-function openCheckout() {
-  drawerMode = 'checkout';
-  deliveryMode = '';
-  $('drawerTitle').textContent = '📋 Finaliser la commande';
-
-  $('drawerBody').innerHTML = `
-    <!-- Récap commande -->
-    <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Votre commande</div>
-      ${cart.map(i=>`
-        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-          <span>${i.name} <span style="color:var(--hint)">×${i.qty}</span></span>
-          <span style="font-weight:700">${fmt(i.price*i.qty)}</span>
-        </div>
-      `).join('')}
-      <div style="border-top:1px solid rgba(255,255,255,.08);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:800;font-size:15px">
-        <span>Total</span><span style="color:var(--link)">${fmt(cartTotal())}</span>
-      </div>
-    </div>
-
-    <!-- Choix livraison -->
-    <div style="font-size:12px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Mode de récupération</div>
-    <div class="delivery-opts">
-      <div class="dopt" id="opt-pickup" onclick="selectDelivery('pickup')">
-        <div class="dopt-icon">🏪</div>
-        <div>
-          <div class="dopt-label">Sur place</div>
-          <div class="dopt-sub">Récupérer en magasin</div>
-        </div>
-      </div>
-      <div class="dopt" id="opt-delivery" onclick="selectDelivery('delivery')">
-        <div class="dopt-icon">📦</div>
-        <div>
-          <div class="dopt-label">Livraison / Envoi</div>
-          <div class="dopt-sub">Livraison à domicile ou envoi postal</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Formulaire (caché jusqu'au choix) -->
-    <div id="delivery-form" style="display:none">
-      <div style="font-size:12px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Vos coordonnées</div>
-
-      <div id="pickup-fields">
-        <div class="fgroup">
-          <label>Nom complet *</label>
-          <input id="f-name" type="text" placeholder="Jean Dupont"/>
-        </div>
-        <div class="fgroup">
-          <label>Téléphone *</label>
-          <input id="f-phone" type="tel" placeholder="+33 6 00 00 00 00"/>
-        </div>
-        <div class="fgroup">
-          <label>Message / Note</label>
-          <textarea id="f-note" placeholder="Heure de passage souhaitée, demande spéciale…" style="min-height:70px"></textarea>
-        </div>
-      </div>
-
-      <div id="delivery-fields" style="display:none">
-        <div class="frow">
-          <div class="fgroup">
-            <label>Prénom *</label>
-            <input id="f-firstname" type="text" placeholder="Jean"/>
-          </div>
-          <div class="fgroup">
-            <label>Nom *</label>
-            <input id="f-lastname" type="text" placeholder="Dupont"/>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label>Adresse *</label>
-          <input id="f-address" type="text" placeholder="12 rue de la Paix"/>
-        </div>
-        <div class="frow">
-          <div class="fgroup">
-            <label>Code postal *</label>
-            <input id="f-zip" type="text" placeholder="75001"/>
-          </div>
-          <div class="fgroup">
-            <label>Ville *</label>
-            <input id="f-city" type="text" placeholder="Paris"/>
-          </div>
-        </div>
-        <div class="fgroup">
-          <label>Téléphone *</label>
-          <input id="f-phone2" type="tel" placeholder="+33 6 00 00 00 00"/>
-        </div>
-        <div class="fgroup">
-          <label>Message / Instructions</label>
-          <textarea id="f-note2" placeholder="Digicode, étage, instructions particulières…" style="min-height:70px"></textarea>
-        </div>
-      </div>
-    </div>
   `;
 
   $('drawerFooter').innerHTML = `
-    <button class="main-btn" id="confirmBtn" onclick="confirmOrder()" disabled>
-      Choisir un mode de récupération
+    <button class="btn btn-accent" onclick="renderDeliveryChoice()">
+      Choisir le mode de réception →
     </button>
   `;
 }
 
-function selectDelivery(mode) {
-  deliveryMode = mode;
+// ── 2. CHOIX LIVRAISON ─────────────────────────────────────────────────────
+function renderDeliveryChoice() {
+  mode = 'delivery-choice';
+  deliveryMode = '';
+  $('drawerTitle').textContent = '📍 Mode de réception';
+
+  $('drawerBody').innerHTML = `
+    <!-- Récap rapide -->
+    <div class="recap" style="margin-bottom:18px">
+      ${cart.map(i => `<div class="recap-row"><span>${i.name} <span style="color:var(--hint)">×${i.qty}</span></span><span>${fmt(i.price*i.qty)}</span></div>`).join('')}
+      <div class="recap-total"><span>Total</span><span style="color:var(--link)">${fmt(cartTotal())}</span></div>
+    </div>
+
+    <div class="slabel">Comment souhaitez-vous récupérer votre commande ?</div>
+
+    <div class="dopt" id="opt-meetup" onclick="selectMode('meetup')">
+      <div class="dopt-icon">🤝</div>
+      <div>
+        <div class="dopt-title">MeetUp</div>
+        <div class="dopt-sub">On se retrouve en personne</div>
+      </div>
+    </div>
+    <div class="dopt" id="opt-livraison" onclick="selectMode('livraison')">
+      <div class="dopt-icon">🚗</div>
+      <div>
+        <div class="dopt-title">Livraison</div>
+        <div class="dopt-sub">Livraison à votre adresse</div>
+      </div>
+    </div>
+    <div class="dopt" id="opt-colis" onclick="selectMode('colis')">
+      <div class="dopt-icon">📦</div>
+      <div>
+        <div class="dopt-title">Colis</div>
+        <div class="dopt-sub">Envoi postal / transporteur</div>
+      </div>
+    </div>
+  `;
+
+  $('drawerFooter').innerHTML = `
+    <button class="btn btn-accent" id="nextBtn" onclick="goToForm()" disabled>
+      Continuer →
+    </button>
+  `;
+}
+
+function selectMode(m) {
+  deliveryMode = m;
   document.querySelectorAll('.dopt').forEach(d => d.classList.remove('on'));
-  $('opt-' + mode).classList.add('on');
-  $('delivery-form').style.display = 'block';
-
-  if (mode === 'pickup') {
-    $('pickup-fields').style.display = 'block';
-    $('delivery-fields').style.display = 'none';
-  } else {
-    $('pickup-fields').style.display = 'none';
-    $('delivery-fields').style.display = 'block';
-  }
-
-  const btn = $('confirmBtn');
-  btn.textContent = mode === 'pickup' ? '✅ Confirmer ma commande' : '📦 Confirmer et livrer';
-  btn.disabled = false;
+  $('opt-' + m).classList.add('on');
+  $('nextBtn').disabled = false;
 }
 
-// ── Confirmation & envoi ───────────────────────────────────────────────────
-async function confirmOrder() {
+// ── 3. FORMULAIRE (Livraison / Colis) ─────────────────────────────────────
+function goToForm() {
   if (!deliveryMode) return;
+  if (deliveryMode === 'meetup') { renderSend(); return; }
+  renderForm();
+}
 
-  // Collecte et validation des champs
-  let clientInfo = {};
-  if (deliveryMode === 'pickup') {
-    const name  = ($('f-name')?.value||'').trim();
-    const phone = ($('f-phone')?.value||'').trim();
-    if (!name || !phone) return toast('Nom et téléphone obligatoires', 2500);
-    clientInfo = { name, phone, note: ($('f-note')?.value||'').trim() };
+function renderForm() {
+  mode = 'form';
+  const label = deliveryMode === 'livraison' ? '🚗 Livraison' : '📦 Colis';
+  $('drawerTitle').textContent = label;
+
+  $('drawerBody').innerHTML = `
+    <div class="fgroup">
+      <label>Adresse <span class="req">● Obligatoire</span></label>
+      <input id="f-address" type="text" placeholder="12 rue de la Paix, 75001 Paris"/>
+    </div>
+    <div class="fgroup">
+      <label>Bâtiment <span class="opt">Optionnel</span></label>
+      <input id="f-bat" type="text" placeholder="Bâtiment A, Résidence Les Pins…"/>
+    </div>
+    <div class="fgroup">
+      <label>Code interphone <span class="opt">Optionnel</span></label>
+      <input id="f-code" type="text" placeholder="Ex : 1234#"/>
+    </div>
+    <div class="fgroup">
+      <label>Téléphone <span class="opt">Optionnel</span></label>
+      <input id="f-phone" type="tel" placeholder="+33 6 00 00 00 00"/>
+    </div>
+  `;
+
+  $('drawerFooter').innerHTML = `
+    <button class="btn btn-accent" onclick="validateForm()">
+      Voir ma commande →
+    </button>
+  `;
+}
+
+function validateForm() {
+  const address = ($('f-address')?.value || '').trim();
+  if (!address) { toast('⚠️ Adresse obligatoire', 2000); return; }
+  renderSend();
+}
+
+// ── 4. ENVOI MESSAGE ───────────────────────────────────────────────────────
+function renderSend() {
+  mode = 'send';
+  $('drawerTitle').textContent = '✉️ Envoyer la commande';
+
+  const msg = buildMessage();
+
+  $('drawerBody').innerHTML = `
+    <div class="slabel" style="margin-bottom:8px">Votre message prêt à envoyer</div>
+    <div class="msg-box" id="msgBox">${escHtml(msg)}</div>
+    <div class="copy-row" onclick="copyMsg()">
+      <span>📋</span><span id="copyLabel">Appuyer pour copier le message</span>
+    </div>
+    <div class="slabel">Envoyer via</div>
+  `;
+
+  $('drawerFooter').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-tg" onclick="sendViaTelegram()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
+        Telegram — @${ADMIN_TG}
+      </button>
+      <button class="btn btn-wa" onclick="sendViaWhatsApp()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        WhatsApp — +${ADMIN_WA}
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="copyMsg()">
+        📋 Copier le message
+      </button>
+    </div>
+  `;
+}
+
+// ── Construction du message ────────────────────────────────────────────────
+function buildMessage() {
+  const lines = cart.map(i =>
+    `• ${i.name} ×${i.qty} — ${fmt(i.price * i.qty)}`
+  ).join('\n');
+
+  let receptionBlock = '';
+  if (deliveryMode === 'meetup') {
+    receptionBlock = '🤝 Mode : MeetUp';
   } else {
-    const firstname = ($('f-firstname')?.value||'').trim();
-    const lastname  = ($('f-lastname')?.value||'').trim();
-    const address   = ($('f-address')?.value||'').trim();
-    const zip       = ($('f-zip')?.value||'').trim();
-    const city      = ($('f-city')?.value||'').trim();
-    const phone     = ($('f-phone2')?.value||'').trim();
-    if (!firstname||!lastname||!address||!zip||!city||!phone)
-      return toast('Veuillez remplir tous les champs obligatoires', 2500);
-    clientInfo = { firstname, lastname, address, zip, city, phone, note: ($('f-note2')?.value||'').trim() };
+    const address = ($('f-address')?.value || '').trim();
+    const bat     = ($('f-bat')?.value    || '').trim();
+    const code    = ($('f-code')?.value   || '').trim();
+    const phone   = ($('f-phone')?.value  || '').trim();
+    const modeLabel = deliveryMode === 'livraison' ? '🚗 Livraison' : '📦 Colis';
+    receptionBlock  = `${modeLabel}\nAdresse : ${address}`;
+    if (bat)   receptionBlock += `\nBâtiment : ${bat}`;
+    if (code)  receptionBlock += `\nInterphone : ${code}`;
+    if (phone) receptionBlock += `\nTéléphone : ${phone}`;
   }
 
-  const btn = $('confirmBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Envoi en cours…';
+  const username = tgUser?.username
+    ? `@${tgUser.username}`
+    : (tgUser?.first_name || 'Non renseigné');
 
-  try {
-    const payload = {
-      tg_user_id:    tgUser?.id || 0,
-      tg_username:   tgUser?.username || '',
-      tg_first_name: tgUser?.first_name || '',
-      items:         cart.map(i => ({ id:i.id, name:i.name, price:i.price, qty:i.qty })),
-      total:         cartTotal(),
-      delivery_mode: deliveryMode,
-      client_info:   clientInfo,
-    };
+  return [
+    `📦 Commande ${STORE_NAME}`,
+    ``,
+    `🛍️ Articles :`,
+    lines,
+    ``,
+    receptionBlock,
+    ``,
+    `👤 ${username}`,
+    ``,
+    `💰 Total : ${fmt(cartTotal())}`,
+  ].join('\n');
+}
 
-    const res  = await fetch(`${API}/api/order`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
-    if (data.success) {
-      const orderId = data.order_id;
-      cart = [];
-      saveCart();
-      tg?.HapticFeedback?.notificationOccurred('success');
-      renderSuccess(orderId);
-    } else throw new Error(data.error || 'Erreur inconnue');
-  } catch(e) {
-    toast('❌ ' + e.message, 3000);
-    tg?.HapticFeedback?.notificationOccurred('error');
-    btn.disabled = false;
-    btn.textContent = deliveryMode === 'pickup' ? '✅ Confirmer ma commande' : '📦 Confirmer et livrer';
+// ── Actions d'envoi ────────────────────────────────────────────────────────
+function copyMsg() {
+  const msg = buildMessage();
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(msg).then(() => {
+      toast('✅ Copié !');
+      const lbl = $('copyLabel');
+      if (lbl) lbl.textContent = '✅ Message copié !';
+    }).catch(() => fallbackCopy(msg));
+  } else {
+    fallbackCopy(msg);
   }
 }
 
-function renderSuccess(orderId) {
-  drawerMode = 'success';
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity  = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  toast('✅ Copié !');
+}
+
+function sendViaTelegram() {
+  copyMsg();
+  const url = `https://t.me/${ADMIN_TG}`;
+  if (tg) {
+    tg.openTelegramLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+  setTimeout(() => showSuccess(), 600);
+}
+
+function sendViaWhatsApp() {
+  const msg = buildMessage();
+  const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}`;
+  if (tg) {
+    tg.openLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+  setTimeout(() => showSuccess(), 600);
+}
+
+function showSuccess() {
+  cart = [];
+  saveCart();
+  tg?.HapticFeedback?.notificationOccurred('success');
   $('drawerTitle').textContent = '';
   $('drawerBody').innerHTML = `
-    <div class="success-screen">
+    <div class="success">
       <div class="success-icon">🎉</div>
-      <div class="success-title">Commande confirmée !</div>
-      <div class="success-num">#${orderId}</div>
+      <div class="success-title">Commande envoyée !</div>
+      <br>
       <div class="success-sub">
-        Vous allez recevoir un récapitulatif complet<br>directement dans ce chat Telegram.<br><br>
-        ${deliveryMode === 'pickup'
-          ? 'Nous vous contacterons pour confirmer l\'heure de passage. 🏪'
-          : 'Nous préparons votre colis et vous tiendrons informé. 📦'}
+        Votre commande a été transmise.<br>
+        Vous serez contacté rapidement par<br>
+        <strong>@${ADMIN_TG}</strong> pour confirmer.
       </div>
     </div>
   `;
   $('drawerFooter').innerHTML = `
-    <button class="main-btn" onclick="closeDrawer()">Retour à la boutique</button>
+    <button class="btn btn-ghost" onclick="closeDrawer()">Retour à la boutique</button>
   `;
   tg?.BackButton.hide();
 }
@@ -481,19 +528,19 @@ function renderSuccess(orderId) {
 async function loadProducts() {
   try {
     const r = await fetch(`${API}/api/products`);
+    if (!r.ok) throw new Error();
     products = await r.json();
   } catch {
-    products = getDemoProducts();
+    products = demo();
   }
   buildCats();
   renderProducts(products);
   saveCart();
-
   const pid = new URLSearchParams(location.search).get('product');
   if (pid) { const p = products.find(x => x.id == pid); if (p) addToCart(p); }
 }
 
-function getDemoProducts() {
+function demo() {
   return [
     {id:1,name:'iPhone 15 Pro',description:'Titane. Le plus pro.',price:1299,image_url:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400',category_name:'Électronique',category_emoji:'📱'},
     {id:2,name:'AirPods Pro 2',description:'Réduction de bruit active.',price:279,image_url:'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400',category_name:'Électronique',category_emoji:'📱'},
@@ -502,7 +549,7 @@ function getDemoProducts() {
     {id:5,name:'Hoodie Premium',description:'Coton brossé 400g.',price:89,image_url:'https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=400',category_name:'Mode',category_emoji:'👗'},
     {id:6,name:'Montre Classique',description:'Mouvement automatique.',price:349,image_url:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',category_name:'Mode',category_emoji:'👗'},
     {id:7,name:'Lampe Neon LED',description:'RGB 16M couleurs.',price:59,image_url:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',category_name:'Maison',category_emoji:'🏠'},
-    {id:8,name:'Cafetière Espresso',description:'15 bars de pression.',price:199,image_url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',category_name:'Maison',category_emoji:'🏠'},
+    {id:8,name:'Cafetière Espresso',description:'15 bars.',price:199,image_url:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',category_name:'Maison',category_emoji:'🏠'},
     {id:9,name:'Diffuseur Huiles',description:'Aromathérapie 500ml.',price:45,image_url:'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400',category_name:'Maison',category_emoji:'🏠'},
   ];
 }
@@ -531,22 +578,21 @@ function setFilter(cat) {
 
 function applyFilter() {
   const q = $('search').value.trim().toLowerCase();
-  renderProducts(products.filter(p => {
-    const matchCat = !activeCat || p.category_name === activeCat;
-    const matchQ   = !q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
-    return matchCat && matchQ;
-  }));
+  renderProducts(products.filter(p =>
+    (!activeCat || p.category_name === activeCat) &&
+    (!q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q))
+  ));
 }
 
 function renderProducts(list) {
   const el = $('main');
   if (!list.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div style="color:var(--hint)">Aucun produit trouvé</div></div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div>Aucun produit trouvé</div></div>`;
     return;
   }
   el.innerHTML = `<div class="grid">${list.map((p,i) => `
     <div class="card" style="animation-delay:${i*.04}s">
-      <img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.src=''">
+      <img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
       <div class="card-body">
         <div class="card-name">${p.name}</div>
         <div class="card-price">${fmt(p.price)}</div>
