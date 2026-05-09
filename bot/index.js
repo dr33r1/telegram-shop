@@ -15,7 +15,7 @@ const __dirname    = path.dirname(fileURLToPath(import.meta.url));
 const BOT_TOKEN    = process.env.BOT_TOKEN;
 const MINI_APP_URL = process.env.MINI_APP_URL || 'https://dr33r1.github.io/telegram-shop/index.html';
 const ADMIN_TOKEN  = process.env.ADMIN_TOKEN  || 'changeme-admin-2025';
-const ADMIN_TG_ID  = parseInt(process.env.ADMIN_TG_ID || '0');
+const ADMIN_TG_ID  = process.env.ADMIN_TG_ID ? process.env.ADMIN_TG_ID.trim() : null;
 const PORT         = parseInt(process.env.PORT || '3000');
 
 if (!BOT_TOKEN) { console.error('❌ BOT_TOKEN manquant'); process.exit(1); }
