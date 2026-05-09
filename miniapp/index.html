@@ -460,21 +460,15 @@ function renderShare() {
   $('drawerFoot').innerHTML = '';
 }
 
-async function sendViaTelegram() {
+function sendViaTelegram() {
   const msg = buildMessage();
-  // Copier dans le presse-papier
-  try { await navigator.clipboard.writeText(msg); } catch(e) {}
-
-  toast('✅ Message copié ! Ouverture du chat…', 2500);
-
-  setTimeout(() => {
-    if (tg) {
-      tg.openTelegramLink(`https://t.me/${ADMIN_TG}`);
-    } else {
-      window.open(`https://t.me/${ADMIN_TG}`, '_blank');
-    }
-    goToStep('success');
-  }, 800);
+  const url = `tg://msg?to=@${ADMIN_TG}&text=${encodeURIComponent(msg)}`;
+  if (tg) {
+    tg.openLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+  goToStep('success');
 }
 
 function sendViaWhatsApp() {
