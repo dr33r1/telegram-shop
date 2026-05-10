@@ -1,4 +1,4 @@
-// index.js — Bot Telegram Shop (Telegraf + Express + sql.js)
+// index.js — Bot Telegram Shop (Telegraf + Express + better-sqlite3)
 import 'dotenv/config';
 import { Telegraf, Markup } from 'telegraf';
 import express from 'express';
@@ -6,7 +6,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
-  initDb, upsertUser, getCategories, getProductsByCat,
+  upsertUser, getCategories, getProductsByCat,
   getProductById, getProducts, createOrder, getOrdersByUser,
   getUserByTgId, all, get, run
 } from './db.js';
@@ -45,8 +45,7 @@ await new Promise(resolve => app.listen(PORT, () => {
   resolve();
 }));
 
-// ── 2. BASE DE DONNÉES ────────────────────────────────────────────────────
-await initDb();
+// ── 2. BASE DE DONNÉES (better-sqlite3 — synchrone, déjà prêt) ────────────
 console.log('✅ Base de données prête');
 
 // ── 3. BOT TELEGRAM ───────────────────────────────────────────────────────
