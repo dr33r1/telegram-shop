@@ -121,8 +121,6 @@ bot.action('help', showHelp);
 
 // ── Commande admin /admin ─────────────────────────────────────────────────
 bot.command('admin', async (ctx) => {
-  if (ADMIN_TG_ID && ctx.from.id !== ADMIN_TG_ID)
-    return ctx.reply('⛔ Accès refusé.');
 
   // PUBLIC_URL à définir dans Railway Variables (ex: https://xxx.railway.app)
   const RAILWAY_URL = process.env.PUBLIC_URL
