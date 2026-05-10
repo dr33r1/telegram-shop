@@ -10,9 +10,16 @@ const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 
 // DB_PATH : volume Railway si monté, sinon dossier local
 function resolveDbPath() {
-  const vol = process.env.RAILWAY_VOLUME_MOUNT_PATH;
-  if (vol) return path.join(vol, 'shop.db');
-  // Fallback : dossier du script
+  // Railway injecte RAILWAY_VOLUME_MOUNT_PATH automatiquement si volume attaché
+  if (process.env.RAILWAY_VOLUME_MOUNT_PATH) {
+    return path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'shop.db');
+  }
+  // Tester les chemins courants Railway sans variable
+  const candidates = ['/data/shop.db', '/mnt/shop.db'];
+  for (const p of candidates) {
+    if (existsSync(path.dirname(p))) return p;
+  }
+  // Fallback local
   return path.join(__dirname, 'shop.db');
 }
 
