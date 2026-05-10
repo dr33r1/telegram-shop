@@ -239,6 +239,28 @@ body{background:#0f0f11;color:#f0f0f0;font-family:-apple-system,BlinkMacSystemFo
   </div>
 </div>
 
+<!-- MODAL ÉDITION CATÉGORIE -->
+<div class="modal-bg" id="editCatModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Modifier la catégorie</div>
+    <div class="mrow">
+      <div class="mfield">
+        <label>Emoji</label>
+        <input id="ec-emoji" type="text" placeholder="☕" maxlength="4" style="font-size:22px;text-align:center"/>
+      </div>
+      <div class="mfield">
+        <label>Nom *</label>
+        <input id="ec-name" type="text" placeholder="Ex: Boissons"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeEditCatModal()">Annuler</button>
+      <button class="btn-save" onclick="saveEditCat()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -408,14 +430,26 @@ function renderCategories() {
   const html = `
     <button class="add-cat-btn" onclick="openCatModal()">+ Nouvelle catégorie</button>
     <div class="ccards">
-      ${categories.length ? categories.map(c => {
-        const n = products.filter(p => p.category_id == c.id && p.active).length;
+      ${categories.length ? categories.map(cat => {
+        const n = products.filter(p => p.category_id == cat.id && p.active).length;
         return `
-          <div class="ccard">
-            <div class="ccard-emoji">${c.emoji||'📦'}</div>
-            <div>
-              <div class="ccard-name">${c.name}</div>
-              <div class="ccard-count">${n} produit(s) actif(s)</div>
+          <div class="ccard" style="flex-direction:column;align-items:stretch;gap:10px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div class="ccard-emoji">${cat.emoji||'📦'}</div>
+              <div style="flex:1">
+                <div class="ccard-name">${cat.name}</div>
+                <div class="ccard-count">${n} produit(s) actif(s)</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="openEditCatModal(${cat.id})"
+                style="flex:1;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer">
+                ✏️ Modifier
+              </button>
+              <button onclick="deleteCategory(${cat.id}, '${cat.name.replace(/'/g,"\'")}')"
+                style="flex:1;background:rgba(239,68,68,.15);color:#ef4444;border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer">
+                🗑️ Supprimer
+              </button>
             </div>
           </div>
         `;
@@ -602,6 +636,55 @@ function addVariant() {
 function removeVariant(i) {
   currentVariants.splice(i, 1);
   renderVariantsList();
+}
+
+// ── ÉDITION / SUPPRESSION CATÉGORIE ───────────────────────────────────────
+let editCatId = null;
+
+function openEditCatModal(id) {
+  const cat = categories.find(x => x.id === id);
+  if (!cat) return;
+  editCatId = id;
+  document.getElementById('ec-name').value  = cat.name  || '';
+  document.getElementById('ec-emoji').value = cat.emoji || '';
+  document.getElementById('editCatModal').classList.add('open');
+}
+
+function closeEditCatModal() {
+  document.getElementById('editCatModal').classList.remove('open');
+  editCatId = null;
+}
+
+async function saveEditCat() {
+  const name  = document.getElementById('ec-name').value.trim();
+  const emoji = document.getElementById('ec-emoji').value.trim() || '📦';
+  if (!name) return toast('Nom obligatoire', true);
+  try {
+    await req('PUT', '/categories/' + editCatId, { name, emoji });
+    toast('✅ Catégorie modifiée !');
+    closeEditCatModal();
+    categories = await req('GET', '/categories');
+    renderCategories();
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
+}
+
+async function deleteCategory(id, name) {
+  const prods = products.filter(p => p.category_id == id);
+  const msg = prods.length > 0
+    ? `Supprimer "${name}" ? Les ${prods.length} produit(s) associés seront désactivés.`
+    : `Supprimer la catégorie "${name}" ?`;
+
+  if (!confirm(msg)) return;
+  try {
+    await req('DELETE', '/categories/' + id);
+    toast('🗑️ Catégorie supprimée');
+    categories = await req('GET', '/categories');
+    products   = await req('GET', '/products');
+    renderCategories();
+    renderProducts();
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
 }
 
 // ── HELPERS ────────────────────────────────────────────────────────────────

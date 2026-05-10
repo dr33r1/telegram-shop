@@ -262,6 +262,22 @@ app.post('/admin/api/categories', adminAuth, (req,res) => {
   res.json({success:true,id:r.lastInsertRowid});
 });
 
+app.put('/admin/api/categories/:id', adminAuth, (req,res) => {
+  const id = parseInt(req.params.id);
+  const {name,emoji} = req.body;
+  if (!name) return res.status(400).json({error:'name requis'});
+  run('UPDATE categories SET name=?,emoji=? WHERE id=?',[name,emoji||'📦',id]);
+  res.json({success:true});
+});
+
+app.delete('/admin/api/categories/:id', adminAuth, (req,res) => {
+  const id = parseInt(req.params.id);
+  // Désactiver les produits liés
+  run('UPDATE products SET active=0 WHERE category_id=?',[id]);
+  run('DELETE FROM categories WHERE id=?',[id]);
+  res.json({success:true});
+});
+
 app.put('/admin/api/orders/:id', adminAuth, (req,res) => {
   const {status} = req.body;
   if (!['pending','paid','shipped','cancelled'].includes(status))
