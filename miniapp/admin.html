@@ -197,6 +197,13 @@ body{background:#0f0f11;color:#f0f0f0;font-family:-apple-system,BlinkMacSystemFo
       <input id="p-img" type="url" placeholder="https://…" oninput="updatePreview()"/>
       <img id="p-preview" class="modal-img-preview" style="display:none" onerror="this.style.display='none'"/>
     </div>
+    <div class="mfield">
+      <label>Variantes de poids <span style="color:#777;font-weight:400;text-transform:none;font-size:11px">(optionnel — si plusieurs grammages)</span></label>
+      <div id="variants-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+      <button type="button" onclick="addVariant()" style="width:100%;background:rgba(99,102,241,.1);color:#818cf8;border:1px solid rgba(99,102,241,.25);border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer">+ Ajouter un grammage</button>
+      <div style="font-size:11px;color:#555;margin-top:6px">Si des variantes sont définies, le prix principal sera ignoré au profit du prix de la variante sélectionnée.</div>
+    </div>
+
     <div class="mfield" id="active-field" style="display:none">
       <div class="toggle-row">
         <span class="toggle-label">Visible dans la boutique</span>
@@ -470,6 +477,10 @@ function openProductModal(p = null) {
   document.getElementById('p-stock').value = p?.stock       ?? 999;
   document.getElementById('p-img').value   = p?.image_url   || '';
 
+  // Charger les variantes existantes
+  try { currentVariants = JSON.parse(p?.variants || '[]'); } catch { currentVariants = []; }
+  renderVariantsList();
+
   const preview = document.getElementById('p-preview');
   if (p?.image_url) { preview.src = p.image_url; preview.style.display = 'block'; }
   else preview.style.display = 'none';
@@ -509,6 +520,9 @@ async function saveProduct() {
   const price = parseFloat(document.getElementById('p-price').value);
   if (!name || isNaN(price)) return toast('Nom et prix obligatoires', true);
 
+  // Valider les variantes (garder uniquement celles avec weight et price valides)
+  const validVariants = currentVariants.filter(v => v.weight && v.weight.trim() && !isNaN(v.price));
+
   const body = {
     name,
     description: document.getElementById('p-desc').value.trim(),
@@ -517,6 +531,7 @@ async function saveProduct() {
     category_id: parseInt(document.getElementById('p-cat').value),
     image_url:   document.getElementById('p-img').value.trim(),
     active:      document.getElementById('p-active').classList.contains('on') ? 1 : 0,
+    variants:    validVariants,
   };
 
   try {
@@ -557,6 +572,36 @@ async function saveCat() {
     renderCategories();
     renderDashboard();
   } catch(e) { toast(e.message, true); }
+}
+
+// ── VARIANTES ─────────────────────────────────────────────────────────────
+let currentVariants = [];
+
+function renderVariantsList() {
+  const el = document.getElementById('variants-list');
+  if (!el) return;
+  el.innerHTML = currentVariants.map((v, i) => `
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="text" value="${v.weight}" placeholder="Ex: 250g"
+        onchange="currentVariants[${i}].weight=this.value"
+        style="flex:1;background:#26262e;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 10px;color:#f0f0f0;font-size:14px;outline:none"/>
+      <input type="number" value="${v.price}" placeholder="Prix €" step="0.01" min="0"
+        onchange="currentVariants[${i}].price=parseFloat(this.value)"
+        style="width:90px;background:#26262e;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 10px;color:#f0f0f0;font-size:14px;outline:none"/>
+      <button onclick="removeVariant(${i})"
+        style="background:rgba(239,68,68,.15);color:#ef4444;border:none;border-radius:8px;width:34px;height:38px;cursor:pointer;font-size:18px;flex-shrink:0">×</button>
+    </div>
+  `).join('');
+}
+
+function addVariant() {
+  currentVariants.push({ weight: '', price: 0 });
+  renderVariantsList();
+}
+
+function removeVariant(i) {
+  currentVariants.splice(i, 1);
+  renderVariantsList();
 }
 
 // ── HELPERS ────────────────────────────────────────────────────────────────

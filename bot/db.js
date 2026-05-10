@@ -43,7 +43,8 @@ export async function initDb() {
       category_id INTEGER REFERENCES categories(id),
       name TEXT NOT NULL, description TEXT,
       price REAL NOT NULL, image_url TEXT,
-      stock INTEGER DEFAULT 999, active INTEGER DEFAULT 1
+      stock INTEGER DEFAULT 999, active INTEGER DEFAULT 1,
+      variants TEXT DEFAULT '[]'
     );
     CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,6 +53,12 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     );
   `);
+
+  // Migration : ajouter la colonne variants si elle n'existe pas encore
+  try {
+    db.run("ALTER TABLE products ADD COLUMN variants TEXT DEFAULT '[]'");
+    console.log('✅ Colonne variants ajoutée');
+  } catch(e) { /* colonne existe déjà */ }
 
   const catCount = db.exec('SELECT COUNT(*) FROM categories')[0]?.values[0][0] || 0;
   if (catCount === 0) {

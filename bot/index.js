@@ -226,10 +226,10 @@ app.get('/admin/api/orders',     adminAuth, (_,res) => res.json(
 ));
 
 app.post('/admin/api/products', adminAuth, (req,res) => {
-  const {category_id,name,description,price,image_url,stock} = req.body;
+  const {category_id,name,description,price,image_url,stock,variants} = req.body;
   if (!name||price===undefined) return res.status(400).json({error:'name et price requis'});
-  const r = run('INSERT INTO products (category_id,name,description,price,image_url,stock) VALUES (?,?,?,?,?,?)',
-    [category_id||1,name,description||'',parseFloat(price),image_url||'',parseInt(stock)||999]);
+  const r = run('INSERT INTO products (category_id,name,description,price,image_url,stock,variants) VALUES (?,?,?,?,?,?,?)',
+    [category_id||1,name,description||'',parseFloat(price),image_url||'',parseInt(stock)||999,JSON.stringify(variants||[])]);
   res.json({success:true,id:r.lastInsertRowid});
 });
 
@@ -237,14 +237,16 @@ app.put('/admin/api/products/:id', adminAuth, (req,res) => {
   const id = parseInt(req.params.id);
   const p  = get('SELECT * FROM products WHERE id=?',[id]);
   if (!p) return res.status(404).json({error:'Produit introuvable'});
-  const {name,description,price,image_url,stock,active,category_id} = req.body;
-  run(`UPDATE products SET name=?,description=?,price=?,image_url=?,stock=?,active=?,category_id=? WHERE id=?`,
+  const {name,description,price,image_url,stock,active,category_id,variants} = req.body;
+  run(`UPDATE products SET name=?,description=?,price=?,image_url=?,stock=?,active=?,category_id=?,variants=? WHERE id=?`,
     [name??p.name, description??p.description,
      price!==undefined?parseFloat(price):p.price,
      image_url??p.image_url,
      stock!==undefined?parseInt(stock):p.stock,
      active!==undefined?(active?1:0):p.active,
-     category_id??p.category_id, id]);
+     category_id??p.category_id,
+     variants!==undefined?JSON.stringify(variants):(p.variants||'[]'),
+     id]);
   res.json({success:true});
 });
 
