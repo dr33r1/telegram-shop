@@ -230,6 +230,11 @@ function saveCart() {
   }
 }
 
+function addToCartById(id) {
+  const p = productMap[id];
+  if (p) addToCart(p);
+}
+
 function addToCart(p, variantWeight, variantPrice) {
   // Si variantes disponibles et pas encore choisie → ouvrir le sélecteur
   let variants = [];
@@ -256,8 +261,9 @@ function addToCart(p, variantWeight, variantPrice) {
   tg?.HapticFeedback?.impactOccurred('light');
 }
 
-let _variantProduct = null;
+let _variantProduct  = null;
 let _selectedVariant = null;
+let _currentVariants = [];
 
 function openVariantDrawer(p, variants) {
   _variantProduct  = p;
@@ -268,31 +274,42 @@ function openVariantDrawer(p, variants) {
   $('varOverlay').style.pointerEvents = 'all';
   $('varDrawer').style.transform = 'translateY(0)';
 
+  // Stocker les variantes dans une variable globale pour éviter les problèmes de quotes
+  _currentVariants = variants;
+
   $('varBody').innerHTML = `
     <div class="var-opts" id="varOpts">
       ${variants.map((v, i) => `
-        <div class="var-opt" onclick="selectVariant(${i}, '${v.weight}', ${v.price})" id="vopt-${i}">
+        <div class="var-opt" id="vopt-${i}" onclick="selectVariant(${i})">
           <span class="var-weight">${v.weight}</span>
           <span class="var-price">${fmt(v.price)}</span>
         </div>
       `).join('')}
     </div>
     <button class="var-add-btn" id="varAddBtn" disabled onclick="confirmVariant()">
-      Ajouter au panier
+      Choisir un grammage
     </button>
   `;
 
   $('varOverlay').onclick = closeVariantDrawer;
 }
 
-function selectVariant(idx, weight, price) {
-  _selectedVariant = { weight, price };
-  document.querySelectorAll('.var-opt').forEach((el, i) =>
-    el.classList.toggle('selected', i === idx)
-  );
+function selectVariant(idx) {
+  const v = _currentVariants[idx];
+  if (!v) return;
+  _selectedVariant = { weight: v.weight, price: parseFloat(v.price) };
+  // Mettre à jour visuellement
+  const container = $('varOpts');
+  if (container) {
+    container.querySelectorAll('.var-opt').forEach((el, i) =>
+      el.classList.toggle('selected', i === idx)
+    );
+  }
   const btn = $('varAddBtn');
-  btn.disabled = false;
-  btn.textContent = `Ajouter ${weight} — ${fmt(price)}`;
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = `Ajouter — ${weight} · ${fmt(parseFloat(price))}`;
+  }
 }
 
 function confirmVariant() {
@@ -682,22 +699,38 @@ function applyFilter() {
   }));
 }
 
+// Map globale id → produit pour éviter les problèmes de sérialisation HTML
+const productMap = {};
+
 function renderProducts(list) {
   const el = $('main');
   if (!list.length) {
     el.innerHTML = `<div class="empty"><div style="font-size:44px">🔍</div><div style="color:var(--hint);margin-top:8px">Aucun produit trouvé</div></div>`;
     return;
   }
-  el.innerHTML = `<div class="grid">${list.map((p,i) => `
-    <div class="card" style="animation-delay:${i*.04}s">
-      <img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
-      <div class="card-body">
-        <div class="card-name">${p.name}</div>
-        <div class="card-price">${fmt(p.price)}</div>
-        <button class="card-btn" onclick='addToCart(${JSON.stringify(p)})'>+ Ajouter</button>
+  // Mettre à jour la map
+  list.forEach(p => productMap[p.id] = p);
+
+  el.innerHTML = `<div class="grid">${list.map((p,i) => {
+    let variants = [];
+    try { variants = JSON.parse(p.variants || '[]'); } catch {}
+    const hasVariants = variants.length > 0;
+    const priceDisplay = hasVariants
+      ? `À partir de ${fmt(Math.min(...variants.map(v => v.price)))}`
+      : fmt(p.price);
+    return `
+      <div class="card" style="animation-delay:${i*.04}s">
+        <img src="${p.image_url||''}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+        <div class="card-body">
+          <div class="card-name">${p.name}</div>
+          <div class="card-price">${priceDisplay}</div>
+          <button class="card-btn" onclick="addToCartById(${p.id})">
+            ${hasVariants ? '⚖️ Choisir le grammage' : '+ Ajouter'}
+          </button>
+        </div>
       </div>
-    </div>
-  `).join('')}</div>`;
+    `;
+  }).join('')}</div>`;
 }
 
 $('cats').querySelector('[data-cat=""]').addEventListener('click', () => setFilter(''));
