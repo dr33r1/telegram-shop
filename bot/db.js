@@ -1,11 +1,17 @@
 // db.js — SQLite via sql.js (wasm auto-résolu, compatible local + Railway)
 import initSqlJs from 'sql.js';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH   = path.join(__dirname, 'shop.db');
+// Sur Railway avec volume monté sur /app/bot, DB_PATH = /app/bot/shop.db
+// En local, fallback sur le dossier du script
+const VOLUME_PATH = '/app/bot/shop.db';
+const LOCAL_PATH  = path.join(__dirname, 'shop.db');
+const DB_PATH     = process.env.RAILWAY_VOLUME_MOUNT_PATH
+  ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'shop.db')
+  : (existsSync('/app/bot') ? VOLUME_PATH : LOCAL_PATH);
 
 // Résoudre le fichier WASM : chercher dans bot/node_modules puis node_modules racine
 function findWasm() {
@@ -22,6 +28,12 @@ function findWasm() {
 let db;
 
 export async function initDb() {
+  // Créer le dossier si nécessaire (volume Railway)
+  const dbDir = path.dirname(DB_PATH);
+  if (!existsSync(dbDir)) {
+    try { mkdirSync(dbDir, { recursive: true }); } catch(e) {}
+  }
+  console.log('📁 DB_PATH:', DB_PATH);
   const SQL    = await initSqlJs({ wasmBinary: findWasm() });
   const buffer = existsSync(DB_PATH) ? readFileSync(DB_PATH) : null;
   db           = buffer ? new SQL.Database(buffer) : new SQL.Database();
