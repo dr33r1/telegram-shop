@@ -161,7 +161,7 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
     <div class="login-sub">Connectez-vous pour gérer vos produits, catégories et commandes.</div>
     <div class="field">
       <label>URL de l'API Railway</label>
-      <input type="url" id="apiInput" placeholder="https://xxx.up.railway.app" />
+      <input type="url" id="apiInput" placeholder="https://xxx.up.railway.app" value="https://telegram-shop-coffee-10.up.railway.app" />
     </div>
     <div class="field">
       <label>Token Admin</label>
@@ -352,10 +352,10 @@ function logout() {
   location.reload();
 }
 window.addEventListener('DOMContentLoaded', () => {
-  const a = localStorage.getItem('adm_api');
+  const a = localStorage.getItem('adm_api') || 'https://telegram-shop-coffee-10.up.railway.app';
   const t = localStorage.getItem('adm_tok');
-  if (a && t) {
-    document.getElementById('apiInput').value   = a;
+  document.getElementById('apiInput').value = a;
+  if (t) {
     document.getElementById('tokenInput').value = t;
     login();
   }
