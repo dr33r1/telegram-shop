@@ -384,18 +384,41 @@ function showTab(name, el) {
 // ── LOAD ALL ───────────────────────────────────────────────────────────────
 async function loadAll() {
   try {
-    [products, categories, orders] = await Promise.all([
+    // Test de connexion d'abord
+    const healthRes = await fetch(`${API}/health`);
+    if (!healthRes.ok) throw new Error(`Health check failed: HTTP ${healthRes.status}`);
+
+    const [p, c, o] = await Promise.all([
       req('GET', '/products'),
       req('GET', '/categories'),
       req('GET', '/orders'),
     ]);
+    products   = p;
+    categories = c;
+    orders     = o;
     updateCounts();
     renderDashboard();
     renderProducts();
     renderCategories();
     renderOrders();
   } catch(e) {
-    toast('Erreur connexion API : ' + e.message, 'err');
+    console.error('loadAll error:', e);
+    // Afficher l'erreur dans le dashboard
+    document.getElementById('tab-dashboard').innerHTML = `
+      <div style="background:#1a1a1f;border:1px solid #ef4444;border-radius:12px;padding:24px;margin-top:10px">
+        <div style="color:#ef4444;font-size:18px;font-weight:800;margin-bottom:10px">❌ Erreur de connexion</div>
+        <div style="color:#f0f0f0;font-size:14px;margin-bottom:16px"><strong>Message :</strong> ${e.message}</div>
+        <div style="color:#888;font-size:13px;margin-bottom:8px"><strong>URL API :</strong> ${API}</div>
+        <div style="color:#888;font-size:13px;margin-bottom:16px"><strong>Token :</strong> ${TOKEN.slice(0,4)}****</div>
+        <div style="color:#f0f0f0;font-size:13px;margin-bottom:8px">Causes possibles :</div>
+        <ul style="color:#888;font-size:13px;padding-left:20px;line-height:2">
+          <li>Railway n'a pas encore redémarré — attendez 2 min</li>
+          <li>ADMIN_TOKEN dans Railway ≠ token saisi ici</li>
+          <li>URL Railway incorrecte</li>
+        </ul>
+        <button onclick="loadAll()" style="margin-top:16px;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer">🔄 Réessayer</button>
+      </div>
+    `;
   }
 }
 
