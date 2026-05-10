@@ -45,8 +45,8 @@ await new Promise(resolve => app.listen(PORT, () => {
   resolve();
 }));
 
-// ── 2. BASE DE DONNÉES (better-sqlite3 — synchrone, déjà prêt) ────────────
-console.log('✅ Base de données prête');
+// ── 2. BASE DE DONNÉES ────────────────────────────────────────────────────
+await initDb();
 
 // ── 3. BOT TELEGRAM ───────────────────────────────────────────────────────
 const bot = new Telegraf(BOT_TOKEN);

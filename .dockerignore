@@ -1,8 +1,0 @@
-node_modules
-bot/node_modules
-bot/.env
-bot/shop.db
-*.db
-.git
-.github
-miniapp
