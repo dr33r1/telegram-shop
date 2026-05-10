@@ -379,6 +379,11 @@ function showTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   el.classList.add('active');
+  // Forcer le rendu à chaque clic d'onglet
+  if (name === 'dashboard')   renderDashboard();
+  if (name === 'products')    { filterProducts(); }
+  if (name === 'categories')  renderCategories();
+  if (name === 'orders')      renderOrders();
 }
 
 // ── LOAD ALL ───────────────────────────────────────────────────────────────
