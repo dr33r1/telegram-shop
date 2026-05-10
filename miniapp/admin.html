@@ -3,325 +3,231 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Admin — Boutique</title>
+<title>Admin Coffee10</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0f0f11;--surface:#1c1c22;--surface2:#26262e;--surface3:#2e2e38;
-  --text:#f2f2f2;--hint:#777;--border:rgba(255,255,255,.08);
-  --accent:#6366f1;--accent2:#818cf8;--danger:#ef4444;
-  --success:#22c55e;--warning:#f59e0b;--radius:12px;
-}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0f11;color:#f0f0f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
 
-/* ── LOGIN ── */
-.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:400px}
-.login-icon{font-size:52px;margin-bottom:16px}
-.login-title{font-size:22px;font-weight:800;margin-bottom:6px}
-.login-sub{color:var(--hint);font-size:13px;margin-bottom:28px;line-height:1.6}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
-.field input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
-.field input:focus{border-color:var(--accent)}
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#1a1a1f;border-radius:16px;padding:28px;width:100%;max-width:380px}
+.login-logo{font-size:48px;text-align:center;margin-bottom:12px}
+.login-title{font-size:20px;font-weight:800;text-align:center;margin-bottom:6px}
+.login-sub{color:#888;font-size:13px;text-align:center;margin-bottom:24px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field input{width:100%;background:#26262e;border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;color:#f0f0f0;font-size:14px;outline:none}
+.field input:focus{border-color:#6366f1}
+.btn-login{width:100%;background:#6366f1;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px}
 
-/* ── APP SHELL ── */
-.app{display:none;flex-direction:column;height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.topbar-title{font-size:15px;font-weight:800;flex:1}
-.api-chip{background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--hint);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* APP */
+#app{display:none}
+.topbar{background:#1a1a1f;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:10}
+.topbar-title{font-size:16px;font-weight:800;flex:1}
+.btn-sm{background:rgba(255,255,255,.08);color:#f0f0f0;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer}
 
-/* ── TABS NAV ── */
-.tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+/* TABS */
+.tabs{display:flex;overflow-x:auto;background:#1a1a1f;border-bottom:1px solid rgba(255,255,255,.08);scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{display:flex;align-items:center;gap:6px;padding:0 20px;height:44px;cursor:pointer;font-size:13px;font-weight:600;color:var(--hint);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
-.tab .tab-count{background:var(--surface3);border-radius:99px;padding:1px 7px;font-size:10px;font-weight:700}
-.tab.active .tab-count{background:rgba(99,102,241,.25);color:var(--accent2)}
+.tab{flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:700;color:#777;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.active{color:#818cf8;border-bottom-color:#6366f1}
 
-/* ── CONTENT ── */
-.content{flex:1;overflow-y:auto;padding:20px}
+/* CONTENT */
+.content{padding:16px}
 .section{display:none}
 .section.active{display:block}
 
-/* ── STATS GRID ── */
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
-@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.stat-val{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
-.stat-lbl{font-size:12px;color:var(--hint)}
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat{background:#1a1a1f;border-radius:12px;padding:16px;text-align:center}
+.stat-n{font-size:30px;font-weight:900;color:#818cf8}
+.stat-l{font-size:12px;color:#777;margin-top:4px}
 
-/* ── SECTION HEADER ── */
-.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
-.sec-title{font-size:16px;font-weight:800}
+/* PRODUCT CARDS */
+.pcards{display:flex;flex-direction:column;gap:10px}
+.pcard{background:#1a1a1f;border-radius:12px;overflow:hidden}
+.pcard-inner{display:flex;gap:12px;padding:12px}
+.pcard-img{width:70px;height:70px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#26262e}
+.pcard-info{flex:1;min-width:0}
+.pcard-name{font-size:14px;font-weight:800;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard-desc{font-size:12px;color:#777;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard-bottom{display:flex;align-items:center;gap:8px}
+.pcard-price{font-size:15px;font-weight:900;color:#818cf8}
+.pcard-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.active-badge{background:rgba(34,197,94,.15);color:#22c55e}
+.inactive-badge{background:rgba(255,255,255,.08);color:#777}
+.pcard-actions{display:flex;gap:8px;padding:0 12px 12px}
+.btn-edit{flex:1;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-toggle{flex:1;border:none;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-toggle-off{background:rgba(239,68,68,.15);color:#ef4444}
+.btn-toggle-on{background:rgba(34,197,94,.15);color:#22c55e}
 
-/* ── SEARCH ── */
-.search-row{display:flex;gap:8px;margin-bottom:14px}
-.search-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--text);font-size:13px;outline:none}
-.search-input:focus{border-color:var(--accent)}
+/* CATEGORIES */
+.ccards{display:flex;flex-direction:column;gap:10px}
+.ccard{background:#1a1a1f;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px}
+.ccard-emoji{font-size:36px}
+.ccard-name{font-size:15px;font-weight:800}
+.ccard-count{font-size:12px;color:#777;margin-top:2px}
 
-/* ── PRODUCT CARDS ── */
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-.pcard-img{width:100%;height:160px;object-fit:cover;background:var(--surface2)}
-.pcard-img-placeholder{width:100%;height:160px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--hint)}
-.pcard-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
-.pcard-name{font-size:14px;font-weight:700}
-.pcard-desc{font-size:12px;color:var(--hint);flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pcard-meta{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
-.pcard-price{font-size:17px;font-weight:800;color:var(--accent2)}
-.pcard-cat{font-size:11px;color:var(--hint);background:var(--surface2);border-radius:99px;padding:2px 8px}
-.pcard-footer{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
-.inactive-badge{font-size:11px;font-weight:700;color:var(--warning);background:rgba(245,158,11,.1);border-radius:99px;padding:2px 8px;margin-left:auto;align-self:center}
+/* ORDERS */
+.ocards{display:flex;flex-direction:column;gap:10px}
+.ocard{background:#1a1a1f;border-radius:12px;padding:14px}
+.ocard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ocard-id{font-size:14px;font-weight:800}
+.ocard-date{font-size:11px;color:#777}
+.ocard-client{font-size:13px;color:#777;margin-bottom:8px}
+.ocard-items{font-size:12px;color:#aaa;margin-bottom:10px;line-height:1.8}
+.ocard-total{font-size:17px;font-weight:900;color:#818cf8;margin-bottom:10px}
+.ocard-status select{width:100%;background:#26262e;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#f0f0f0;font-size:13px}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:5px;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
-.btn:active{opacity:.7}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.btn-sm{padding:6px 10px;font-size:12px}
-.btn-icon{padding:6px 8px;font-size:16px}
-
-/* ── MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
-@media(min-width:600px){.modal-bg{align-items:center;padding:20px}}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:50;display:none;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:var(--surface);width:100%;max-width:520px;border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;padding:24px}
-@media(min-width:600px){.modal{border-radius:20px}}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 20px}
-.modal-title{font-size:17px;font-weight:800;margin-bottom:20px}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:16px;border-top:1px solid var(--border)}
-
-/* ── FORM ── */
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.form-control{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;font-family:inherit;transition:border-color .2s}
-.form-control:focus{border-color:var(--accent)}
-textarea.form-control{resize:vertical;min-height:80px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.img-preview{width:100%;height:140px;border-radius:10px;object-fit:cover;margin-top:10px;background:var(--surface2);border:1px solid var(--border)}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:12px 14px}
-.toggle-label{font-size:13px;font-weight:600}
-.toggle{width:44px;height:24px;background:var(--surface3);border:none;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
-.toggle.on{background:var(--accent)}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.modal{background:#1a1a1f;width:100%;border-radius:20px 20px 0 0;padding:20px;max-height:90vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:20px}
+.mfield{margin-bottom:14px}
+.mfield label{display:block;font-size:11px;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.mfield input,.mfield textarea,.mfield select{width:100%;background:#26262e;border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 12px;color:#f0f0f0;font-size:14px;outline:none;font-family:inherit}
+.mfield textarea{min-height:80px;resize:vertical}
+.mfield input:focus,.mfield textarea:focus{border-color:#6366f1}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-img-preview{width:100%;height:140px;border-radius:10px;object-fit:cover;background:#26262e;margin-top:8px;border:1px solid rgba(255,255,255,.1)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:#26262e;border-radius:10px;padding:12px 14px}
+.toggle-label{font-size:13px;font-weight:700}
+.toggle{width:46px;height:26px;background:#333;border:none;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#6366f1}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s}
 .toggle.on::after{transform:translateX(20px)}
+.modal-footer{display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}
+.btn-save{flex:1;background:#6366f1;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-cancel{background:rgba(255,255,255,.08);color:#f0f0f0;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;min-width:90px}
 
-/* ── TABLE ── */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-table{width:100%;border-collapse:collapse}
-th{background:var(--surface2);padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,.02)}
+/* NEW PRODUCT BTN */
+.add-btn{width:100%;background:#6366f1;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:16px}
+.add-cat-btn{width:100%;background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:16px}
 
-/* ── BADGES ── */
-.badge{display:inline-block;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:700}
-.badge-pending{background:rgba(245,158,11,.15);color:var(--warning)}
-.badge-paid{background:rgba(34,197,94,.15);color:var(--success)}
-.badge-shipped{background:rgba(99,102,241,.15);color:var(--accent2)}
-.badge-cancelled{background:rgba(239,68,68,.15);color:var(--danger)}
-.badge-active{background:rgba(34,197,94,.15);color:var(--success)}
-.badge-inactive{background:rgba(255,255,255,.08);color:var(--hint)}
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:#26262e;color:#f0f0f0;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;z-index:100;white-space:nowrap;pointer-events:none;border-left:3px solid #6366f1}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{border-left-color:#ef4444}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 8px 40px rgba(0,0,0,.5);opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{border-left:3px solid var(--success)}
-.toast.err{border-left:3px solid var(--danger)}
+/* ERROR BOX */
+.err-box{background:#1a1a1f;border:2px solid #ef4444;border-radius:12px;padding:20px;text-align:center}
+.err-box-title{color:#ef4444;font-size:16px;font-weight:800;margin-bottom:10px}
+.err-box-msg{color:#aaa;font-size:13px;line-height:1.7;margin-bottom:14px}
+.btn-retry{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:14px}
 
-/* ── EMPTY ── */
-.empty{text-align:center;padding:60px 20px;color:var(--hint)}
-.empty-icon{font-size:44px;margin-bottom:12px}
-.empty-text{font-size:14px}
-
-/* ── CAT CARDS ── */
-.cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.ccard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:12px}
-.ccard-emoji{font-size:32px;flex-shrink:0}
-.ccard-name{font-weight:700;font-size:15px}
-.ccard-count{font-size:12px;color:var(--hint)}
-
-/* ── SELECT ── */
-select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
-
-.spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.empty{text-align:center;padding:40px;color:#777;font-size:14px}
+.loading{text-align:center;padding:40px;color:#777}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid rgba(255,255,255,.1);border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-row{text-align:center;padding:40px;color:var(--hint)}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div class="login-screen" id="loginScreen">
-  <div class="login-card">
-    <div class="login-icon">🛍️</div>
-    <div class="login-title">Admin Boutique</div>
-    <div class="login-sub">Connectez-vous pour gérer vos produits, catégories et commandes.</div>
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">☕</div>
+    <div class="login-title">Admin Coffee10</div>
+    <div class="login-sub">Gérez votre boutique</div>
     <div class="field">
-      <label>URL de l'API Railway</label>
-      <input type="url" id="apiInput" placeholder="https://xxx.up.railway.app" value="https://telegram-shop-coffee-10.up.railway.app" />
+      <label>URL API Railway</label>
+      <input type="url" id="apiInput" value="https://telegram-shop-coffee-10.up.railway.app"/>
     </div>
     <div class="field">
       <label>Token Admin</label>
-      <input type="password" id="tokenInput" placeholder="Votre token secret" />
+      <input type="password" id="tokenInput" placeholder="Votre token secret"/>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-top:8px" onclick="login()">
-      Connexion →
-    </button>
+    <button class="btn-login" onclick="login()">Se connecter →</button>
   </div>
 </div>
 
 <!-- APP -->
-<div class="app" id="app">
-  <!-- Topbar -->
+<div id="app">
   <div class="topbar">
-    <div class="topbar-title">🛍️ Admin Boutique</div>
-    <div class="api-chip" id="apiChip">—</div>
-    <button class="btn btn-ghost btn-sm" onclick="logout()">Quitter</button>
+    <div class="topbar-title">☕ Admin Coffee10</div>
+    <button class="btn-sm" onclick="loadAll()">🔄</button>
+    <button class="btn-sm" onclick="logout()">Quitter</button>
   </div>
-
-  <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" onclick="showTab('dashboard',this)">📊 Dashboard</div>
-    <div class="tab" id="tab-products" onclick="showTab('products',this)">📦 Produits <span class="tab-count" id="cnt-products">0</span></div>
-    <div class="tab" id="tab-categories" onclick="showTab('categories',this)">📂 Catégories <span class="tab-count" id="cnt-categories">0</span></div>
-    <div class="tab" id="tab-orders" onclick="showTab('orders',this)">📋 Commandes <span class="tab-count" id="cnt-orders">0</span></div>
+    <div class="tab" onclick="showTab('products',this)">📦 Produits</div>
+    <div class="tab" onclick="showTab('categories',this)">📂 Catégories</div>
+    <div class="tab" onclick="showTab('orders',this)">📋 Commandes</div>
   </div>
-
-  <!-- Content -->
   <div class="content">
-
-    <!-- DASHBOARD -->
-    <div class="section active" id="tab-dashboard">
-      <div class="stats">
-        <div class="stat"><div class="stat-val" id="s-products">—</div><div class="stat-lbl">Produits actifs</div></div>
-        <div class="stat"><div class="stat-val" id="s-categories">—</div><div class="stat-lbl">Catégories</div></div>
-        <div class="stat"><div class="stat-val" id="s-orders">—</div><div class="stat-lbl">Commandes</div></div>
-        <div class="stat"><div class="stat-val" id="s-revenue">—</div><div class="stat-lbl">Chiffre d'affaires</div></div>
-      </div>
-      <div class="sec-title" style="margin-bottom:12px">Dernières commandes</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Client</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead>
-          <tbody id="dash-orders"><tr><td colspan="5" class="loading-row"><div class="spinner"></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PRODUITS -->
-    <div class="section" id="tab-products">
-      <div class="sec-header">
-        <div class="sec-title">Produits</div>
-        <button class="btn btn-primary" onclick="openProductModal()">+ Nouveau</button>
-      </div>
-      <div class="search-row">
-        <input class="search-input" id="productSearch" placeholder="🔍 Rechercher un produit..." oninput="filterProducts()"/>
-        <select class="form-control" id="catFilter" onchange="filterProducts()" style="max-width:160px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 30px 9px 12px">
-          <option value="">Toutes catégories</option>
-        </select>
-      </div>
-      <div class="products-grid" id="products-grid">
-        <div class="loading-row" style="grid-column:1/-1"><div class="spinner"></div></div>
-      </div>
-    </div>
-
-    <!-- CATÉGORIES -->
-    <div class="section" id="tab-categories">
-      <div class="sec-header">
-        <div class="sec-title">Catégories</div>
-        <button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle</button>
-      </div>
-      <div class="cats-grid" id="cats-grid">
-        <div class="loading-row"><div class="spinner"></div></div>
-      </div>
-    </div>
-
-    <!-- COMMANDES -->
-    <div class="section" id="tab-orders">
-      <div class="sec-header">
-        <div class="sec-title">Commandes</div>
-        <button class="btn btn-ghost btn-sm" onclick="loadOrders()">🔄 Actualiser</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Client</th><th>Articles</th><th>Total</th><th>Date</th><th>Statut</th></tr></thead>
-          <tbody id="orders-table"><tr><td colspan="6" class="loading-row"><div class="spinner"></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /app -->
+    <div class="section active" id="section-dashboard"><div class="loading"><div class="spin"></div><br>Chargement…</div></div>
+    <div class="section" id="section-products"><div class="loading"><div class="spin"></div><br>Chargement…</div></div>
+    <div class="section" id="section-categories"><div class="loading"><div class="spin"></div><br>Chargement…</div></div>
+    <div class="section" id="section-orders"><div class="loading"><div class="spin"></div><br>Chargement…</div></div>
+  </div>
+</div>
 
 <!-- MODAL PRODUIT -->
-<div class="modal-bg" id="productModal" onclick="if(event.target===this)closeProductModal()">
+<div class="modal-bg" id="productModal">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="productModalTitle">Nouveau produit</div>
-
-    <div class="form-group">
-      <label class="form-label">Nom du produit *</label>
-      <input class="form-control" id="p-name" placeholder="Ex: iPhone 15 Pro" />
+    <div class="modal-title" id="modalTitle">Nouveau produit</div>
+    <div class="mfield">
+      <label>Nom *</label>
+      <input id="p-name" type="text" placeholder="Ex: Espresso Double"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-control" id="p-desc" placeholder="Description courte..."></textarea>
+    <div class="mfield">
+      <label>Description</label>
+      <textarea id="p-desc" placeholder="Description courte…"></textarea>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Prix (€) *</label>
-        <input class="form-control" type="number" id="p-price" placeholder="0.00" step="0.01" min="0"/>
+    <div class="mrow">
+      <div class="mfield">
+        <label>Prix (€) *</label>
+        <input id="p-price" type="number" step="0.01" min="0" placeholder="0.00"/>
       </div>
-      <div class="form-group">
-        <label class="form-label">Stock</label>
-        <input class="form-control" type="number" id="p-stock" placeholder="999" min="0"/>
+      <div class="mfield">
+        <label>Stock</label>
+        <input id="p-stock" type="number" min="0" placeholder="999"/>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Catégorie</label>
-      <select class="form-control" id="p-cat"></select>
+    <div class="mfield">
+      <label>Catégorie</label>
+      <select id="p-cat"></select>
     </div>
-    <div class="form-group">
-      <label class="form-label">URL de l'image</label>
-      <input class="form-control" type="url" id="p-img" placeholder="https://images.unsplash.com/..." oninput="previewImg()"/>
-      <img id="img-preview" class="img-preview" style="display:none" onerror="this.style.display='none'"/>
+    <div class="mfield">
+      <label>URL Image</label>
+      <input id="p-img" type="url" placeholder="https://…" oninput="updatePreview()"/>
+      <img id="p-preview" class="modal-img-preview" style="display:none" onerror="this.style.display='none'"/>
     </div>
-    <div class="form-group" id="active-row" style="display:none">
+    <div class="mfield" id="active-field" style="display:none">
       <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Produit visible dans la boutique</div>
-        </div>
+        <span class="toggle-label">Visible dans la boutique</span>
         <button class="toggle on" id="p-active" onclick="this.classList.toggle('on')"></button>
       </div>
     </div>
-
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeProductModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="saveProduct()">💾 Enregistrer</button>
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveProduct()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL CATEGORIE -->
-<div class="modal-bg" id="catModal" onclick="if(event.target===this)closeCatModal()">
-  <div class="modal" style="max-width:380px">
+<div class="modal-bg" id="catModal">
+  <div class="modal" style="max-width:400px">
     <div class="modal-handle"></div>
     <div class="modal-title">Nouvelle catégorie</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Emoji</label>
-        <input class="form-control" id="c-emoji" placeholder="📦" maxlength="4" style="font-size:24px;text-align:center"/>
+    <div class="mrow">
+      <div class="mfield">
+        <label>Emoji</label>
+        <input id="c-emoji" type="text" placeholder="☕" maxlength="4" style="font-size:22px;text-align:center"/>
       </div>
-      <div class="form-group">
-        <label class="form-label">Nom *</label>
-        <input class="form-control" id="c-name" placeholder="Ex: Électronique"/>
+      <div class="mfield">
+        <label>Nom *</label>
+        <input id="c-name" type="text" placeholder="Ex: Boissons"/>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeCatModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="saveCat()">✅ Créer</button>
+      <button class="btn-cancel" onclick="closeCatModal()">Annuler</button>
+      <button class="btn-save" onclick="saveCat()">✅ Créer</button>
     </div>
   </div>
 </div>
@@ -329,246 +235,271 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
 <div class="toast" id="toast"></div>
 
 <script>
+const RAILWAY_URL = 'https://telegram-shop-coffee-10.up.railway.app';
 let API = '', TOKEN = '';
 let products = [], categories = [], orders = [];
 let editId = null;
 
 // ── AUTH ───────────────────────────────────────────────────────────────────
 function login() {
-  const api   = document.getElementById('apiInput').value.trim().replace(/\/+$/,'');
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!api || !token) return toast('Remplissez l\'URL API et le token', 'err');
-  API = api; TOKEN = token;
-  localStorage.setItem('adm_api', api);
-  localStorage.setItem('adm_tok', token);
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('apiChip').textContent = new URL(api).hostname;
-  loadAll();
+  API   = (document.getElementById('apiInput').value || RAILWAY_URL).trim().replace(/\/+$/, '');
+  TOKEN = document.getElementById('tokenInput').value.trim();
+  if (!TOKEN) return toast('Token requis', true);
+  localStorage.setItem('c10_api', API);
+  localStorage.setItem('c10_tok', TOKEN);
+  showApp();
 }
+
 function logout() {
-  localStorage.removeItem('adm_api');
-  localStorage.removeItem('adm_tok');
+  localStorage.removeItem('c10_tok');
   location.reload();
 }
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-  const a = localStorage.getItem('adm_api') || 'https://telegram-shop-coffee-10.up.railway.app';
-  const t = localStorage.getItem('adm_tok');
+  const a = localStorage.getItem('c10_api') || RAILWAY_URL;
+  const t = localStorage.getItem('c10_tok');
   document.getElementById('apiInput').value = a;
-  if (t) {
-    document.getElementById('tokenInput').value = t;
-    login();
-  }
+  if (t) { TOKEN = t; API = a; showApp(); }
 });
 
 // ── API ────────────────────────────────────────────────────────────────────
 async function req(method, path, body) {
-  const r = await fetch(`${API}/admin/api${path}`, {
+  const opts = {
     method,
-    headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  const data = await r.json();
-  if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + '/admin/api' + path, opts);
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'HTTP ' + r.status);
   return data;
+}
+
+// ── LOAD ───────────────────────────────────────────────────────────────────
+async function loadAll() {
+  // Montrer spinner dans tous les onglets
+  ['dashboard','products','categories','orders'].forEach(s => {
+    document.getElementById('section-' + s).innerHTML =
+      '<div class="loading"><div class="spin"></div><br>Chargement…</div>';
+  });
+
+  try {
+    // Test connexion
+    const h = await fetch(API + '/health').catch(() => null);
+    if (!h || !h.ok) throw new Error('Serveur Railway inaccessible. Vérifiez l\'URL.');
+
+    // Charger les données
+    products   = await req('GET', '/products');
+    categories = await req('GET', '/categories');
+    orders     = await req('GET', '/orders');
+
+    // Afficher
+    renderDashboard();
+    renderProducts();
+    renderCategories();
+    renderOrders();
+    toast('Données chargées ✅');
+
+  } catch(e) {
+    const errHtml = `
+      <div class="err-box">
+        <div class="err-box-title">❌ Connexion impossible</div>
+        <div class="err-box-msg">
+          <strong>Erreur :</strong> ${e.message}<br><br>
+          <strong>URL :</strong> ${API}<br>
+          <strong>Token :</strong> ${TOKEN.slice(0,3)}***<br><br>
+          • Vérifiez que Railway est actif<br>
+          • Vérifiez ADMIN_TOKEN dans Railway Variables<br>
+          • Vérifiez que l'URL est correcte
+        </div>
+        <button class="btn-retry" onclick="loadAll()">🔄 Réessayer</button>
+      </div>
+    `;
+    document.getElementById('section-dashboard').innerHTML   = errHtml;
+    document.getElementById('section-products').innerHTML    = errHtml;
+    document.getElementById('section-categories').innerHTML  = errHtml;
+    document.getElementById('section-orders').innerHTML      = errHtml;
+  }
 }
 
 // ── TABS ───────────────────────────────────────────────────────────────────
 function showTab(name, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('section-' + name).classList.add('active');
   el.classList.add('active');
-  // Forcer le rendu à chaque clic d'onglet
-  if (name === 'dashboard')   renderDashboard();
-  if (name === 'products')    { filterProducts(); }
-  if (name === 'categories')  renderCategories();
-  if (name === 'orders')      renderOrders();
-}
-
-// ── LOAD ALL ───────────────────────────────────────────────────────────────
-async function loadAll() {
-  try {
-    // Test de connexion d'abord
-    const healthRes = await fetch(`${API}/health`);
-    if (!healthRes.ok) throw new Error(`Health check failed: HTTP ${healthRes.status}`);
-
-    const [p, c, o] = await Promise.all([
-      req('GET', '/products'),
-      req('GET', '/categories'),
-      req('GET', '/orders'),
-    ]);
-    products   = p;
-    categories = c;
-    orders     = o;
-    updateCounts();
-    renderDashboard();
-    renderProducts();
-    renderCategories();
-    renderOrders();
-  } catch(e) {
-    console.error('loadAll error:', e);
-    // Afficher l'erreur dans le dashboard
-    document.getElementById('tab-dashboard').innerHTML = `
-      <div style="background:#1a1a1f;border:1px solid #ef4444;border-radius:12px;padding:24px;margin-top:10px">
-        <div style="color:#ef4444;font-size:18px;font-weight:800;margin-bottom:10px">❌ Erreur de connexion</div>
-        <div style="color:#f0f0f0;font-size:14px;margin-bottom:16px"><strong>Message :</strong> ${e.message}</div>
-        <div style="color:#888;font-size:13px;margin-bottom:8px"><strong>URL API :</strong> ${API}</div>
-        <div style="color:#888;font-size:13px;margin-bottom:16px"><strong>Token :</strong> ${TOKEN.slice(0,4)}****</div>
-        <div style="color:#f0f0f0;font-size:13px;margin-bottom:8px">Causes possibles :</div>
-        <ul style="color:#888;font-size:13px;padding-left:20px;line-height:2">
-          <li>Railway n'a pas encore redémarré — attendez 2 min</li>
-          <li>ADMIN_TOKEN dans Railway ≠ token saisi ici</li>
-          <li>URL Railway incorrecte</li>
-        </ul>
-        <button onclick="loadAll()" style="margin-top:16px;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer">🔄 Réessayer</button>
-      </div>
-    `;
-  }
-}
-
-async function loadOrders() {
-  try { orders = await req('GET', '/orders'); renderOrders(); renderDashboard(); }
-  catch(e) { toast(e.message, 'err'); }
-}
-
-function updateCounts() {
-  document.getElementById('cnt-products').textContent   = products.filter(p=>p.active).length;
-  document.getElementById('cnt-categories').textContent = categories.length;
-  document.getElementById('cnt-orders').textContent     = orders.length;
-  document.getElementById('s-products').textContent     = products.filter(p=>p.active).length;
-  document.getElementById('s-categories').textContent   = categories.length;
-  document.getElementById('s-orders').textContent       = orders.length;
-  const rev = orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0);
-  document.getElementById('s-revenue').textContent = fmt(rev);
-
-  // Remplir le filtre catégories
-  const cf = document.getElementById('catFilter');
-  cf.innerHTML = '<option value="">Toutes catégories</option>' +
-    categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
 }
 
 // ── DASHBOARD ──────────────────────────────────────────────────────────────
 function renderDashboard() {
-  const tbody = document.getElementById('dash-orders');
-  if (!orders.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="loading-row" style="color:var(--hint)">Aucune commande pour l'instant</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = orders.slice(0,8).map(o => `
-    <tr>
-      <td><strong>#${o.id}</strong></td>
-      <td>${o.first_name||'—'}${o.username?' <span style="color:var(--hint)">@'+o.username+'</span>':''}</td>
-      <td><strong>${fmt(o.total)}</strong></td>
-      <td><span class="badge badge-${o.status}">${o.status}</span></td>
-      <td style="color:var(--hint)">${(o.created_at||'').slice(0,10)}</td>
-    </tr>
-  `).join('');
+  const rev = orders.filter(o => o.status !== 'cancelled').reduce((s,o) => s + (o.total||0), 0);
+  const recent = orders.slice(0, 5).map(o => `
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px">
+      <div>
+        <strong>#${o.id}</strong>
+        <span style="color:#777;margin-left:8px">${o.first_name||'—'}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <strong style="color:#818cf8">${fmt(o.total)}</strong>
+        <span style="font-size:11px;color:#777">${(o.created_at||'').slice(0,10)}</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty">Aucune commande</div>';
+
+  document.getElementById('section-dashboard').innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="stat-n">${products.filter(p=>p.active).length}</div><div class="stat-l">Produits actifs</div></div>
+      <div class="stat"><div class="stat-n">${categories.length}</div><div class="stat-l">Catégories</div></div>
+      <div class="stat"><div class="stat-n">${orders.length}</div><div class="stat-l">Commandes</div></div>
+      <div class="stat"><div class="stat-n" style="font-size:20px">${fmt(rev)}</div><div class="stat-l">Chiffre d'affaires</div></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Dernières commandes</div>
+    ${recent}
+  `;
 }
 
 // ── PRODUITS ───────────────────────────────────────────────────────────────
-function filterProducts() {
-  const q   = document.getElementById('productSearch').value.toLowerCase();
-  const cat = document.getElementById('catFilter').value;
-  const filtered = products.filter(p => {
-    const matchQ   = !q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
-    const matchCat = !cat || String(p.category_id) === cat;
-    return matchQ && matchCat;
-  });
-  renderProductCards(filtered);
-}
-
 function renderProducts() {
-  renderProductCards(products);
+  const html = `
+    <button class="add-btn" onclick="openProductModal()">+ Nouveau produit</button>
+    <div class="pcards">
+      ${products.length ? products.map(p => `
+        <div class="pcard">
+          <div class="pcard-inner">
+            <img class="pcard-img" src="${p.image_url||''}" onerror="this.style.display='none'" alt=""/>
+            <div class="pcard-info">
+              <div class="pcard-name">${p.name}</div>
+              <div class="pcard-desc">${p.description||'<em style="color:#555">Pas de description</em>'}</div>
+              <div class="pcard-bottom">
+                <span class="pcard-price">${fmt(p.price)}</span>
+                <span class="pcard-status ${p.active ? 'active-badge' : 'inactive-badge'}">${p.active ? 'Actif' : 'Inactif'}</span>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-actions">
+            <button class="btn-edit" onclick="editProduct(${p.id})">✏️ Modifier</button>
+            <button class="btn-toggle ${p.active ? 'btn-toggle-off' : 'btn-toggle-on'}"
+              onclick="toggleActive(${p.id}, ${p.active})">
+              ${p.active ? '🚫 Masquer' : '✅ Activer'}
+            </button>
+          </div>
+        </div>
+      `).join('') : '<div class="empty">Aucun produit</div>'}
+    </div>
+  `;
+  document.getElementById('section-products').innerHTML = html;
 }
 
-function renderProductCards(list) {
-  const grid = document.getElementById('products-grid');
-  if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-text">Aucun produit trouvé</div></div>`;
-    return;
-  }
-  grid.innerHTML = list.map(p => `
-    <div class="pcard">
-      ${p.image_url
-        ? `<img class="pcard-img" src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-        : ''}
-      <div class="pcard-img-placeholder" style="${p.image_url?'display:none':''}">🖼️</div>
-      <div class="pcard-body">
-        <div class="pcard-name">${p.name}</div>
-        <div class="pcard-desc">${p.description||'<span style="color:var(--hint);font-style:italic">Pas de description</span>'}</div>
-        <div class="pcard-meta">
-          <div class="pcard-price">${fmt(p.price)}</div>
-          <div class="pcard-cat">${p.category_emoji||''} ${p.category_name||''}</div>
-        </div>
-        <div style="font-size:11px;color:var(--hint);margin-top:4px">Stock : ${p.stock} · ${p.active ? '<span style="color:var(--success)">● Actif</span>' : '<span style="color:var(--hint)">● Inactif</span>'}</div>
-      </div>
-      <div class="pcard-footer">
-        <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="editProduct(${p.id})">✏️ Modifier</button>
-        <button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:var(--danger)" onclick="toggleProduct(${p.id},${p.active})">
-          ${p.active ? '🚫 Masquer' : '✅ Activer'}
-        </button>
-      </div>
+// ── CATÉGORIES ─────────────────────────────────────────────────────────────
+function renderCategories() {
+  const html = `
+    <button class="add-cat-btn" onclick="openCatModal()">+ Nouvelle catégorie</button>
+    <div class="ccards">
+      ${categories.length ? categories.map(c => {
+        const n = products.filter(p => p.category_id == c.id && p.active).length;
+        return `
+          <div class="ccard">
+            <div class="ccard-emoji">${c.emoji||'📦'}</div>
+            <div>
+              <div class="ccard-name">${c.name}</div>
+              <div class="ccard-count">${n} produit(s) actif(s)</div>
+            </div>
+          </div>
+        `;
+      }).join('') : '<div class="empty">Aucune catégorie</div>'}
     </div>
-  `).join('');
+  `;
+  document.getElementById('section-categories').innerHTML = html;
+}
+
+// ── COMMANDES ──────────────────────────────────────────────────────────────
+const STATUSES = ['pending','paid','shipped','cancelled'];
+const STATUS_FR = { pending:'⏳ En attente', paid:'✅ Payée', shipped:'📦 Expédiée', cancelled:'❌ Annulée' };
+
+function renderOrders() {
+  const html = `
+    <div class="ocards">
+      ${orders.length ? orders.map(o => {
+        let items = [];
+        try { items = JSON.parse(o.items_json || '[]'); } catch{}
+        return `
+          <div class="ocard">
+            <div class="ocard-head">
+              <span class="ocard-id">#${o.id}</span>
+              <span class="ocard-date">${(o.created_at||'').slice(0,10)}</span>
+            </div>
+            <div class="ocard-client">👤 ${o.first_name||'—'}${o.username ? ' @'+o.username : ''}</div>
+            <div class="ocard-items">${items.map(i => `• ${i.name} ×${i.qty} — ${fmt(i.price*i.qty)}`).join('\n')}</div>
+            <div class="ocard-total">${fmt(o.total)}</div>
+            <div class="ocard-status">
+              <select onchange="updateStatus(${o.id}, this.value)">
+                ${STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${STATUS_FR[s]}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `;
+      }).join('') : '<div class="empty">Aucune commande</div>'}
+    </div>
+  `;
+  document.getElementById('section-orders').innerHTML = html;
+}
+
+async function updateStatus(id, status) {
+  try {
+    await req('PUT', '/orders/' + id, { status });
+    const o = orders.find(x => x.id === id);
+    if (o) o.status = status;
+    toast('Statut mis à jour ✅');
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
+}
+
+// ── MODAL PRODUIT ──────────────────────────────────────────────────────────
+function openProductModal(p = null) {
+  editId = p ? p.id : null;
+  document.getElementById('modalTitle').textContent = p ? '✏️ Modifier' : '➕ Nouveau produit';
+  document.getElementById('p-name').value  = p?.name        || '';
+  document.getElementById('p-desc').value  = p?.description || '';
+  document.getElementById('p-price').value = p?.price       ?? '';
+  document.getElementById('p-stock').value = p?.stock       ?? 999;
+  document.getElementById('p-img').value   = p?.image_url   || '';
+
+  const preview = document.getElementById('p-preview');
+  if (p?.image_url) { preview.src = p.image_url; preview.style.display = 'block'; }
+  else preview.style.display = 'none';
+
+  const sel = document.getElementById('p-cat');
+  sel.innerHTML = categories.map(c =>
+    `<option value="${c.id}" ${c.id == p?.category_id ? 'selected' : ''}>${c.emoji} ${c.name}</option>`
+  ).join('');
+
+  const af = document.getElementById('active-field');
+  af.style.display = p ? 'block' : 'none';
+  const tog = document.getElementById('p-active');
+  tog.className = 'toggle' + (p ? (p.active ? ' on' : '') : ' on');
+
+  document.getElementById('productModal').classList.add('open');
 }
 
 function editProduct(id) {
   const p = products.find(x => x.id === id);
-  if (!p) return;
-  editId = id;
-  document.getElementById('productModalTitle').textContent = '✏️ Modifier le produit';
-  document.getElementById('p-name').value  = p.name || '';
-  document.getElementById('p-desc').value  = p.description || '';
-  document.getElementById('p-price').value = p.price ?? '';
-  document.getElementById('p-stock').value = p.stock ?? 999;
-  document.getElementById('p-img').value   = p.image_url || '';
-
-  const preview = document.getElementById('img-preview');
-  if (p.image_url) { preview.src = p.image_url; preview.style.display = 'block'; }
-  else { preview.style.display = 'none'; }
-
-  // Catégories
-  const sel = document.getElementById('p-cat');
-  sel.innerHTML = categories.map(c =>
-    `<option value="${c.id}" ${c.id == p.category_id ? 'selected' : ''}>${c.emoji} ${c.name}</option>`
-  ).join('');
-
-  // Toggle actif
-  document.getElementById('active-row').style.display = 'block';
-  const tog = document.getElementById('p-active');
-  tog.className = 'toggle' + (p.active ? ' on' : '');
-
-  document.getElementById('productModal').classList.add('open');
+  if (p) openProductModal(p);
 }
 
-function openProductModal() {
-  editId = null;
-  document.getElementById('productModalTitle').textContent = '➕ Nouveau produit';
-  document.getElementById('p-name').value  = '';
-  document.getElementById('p-desc').value  = '';
-  document.getElementById('p-price').value = '';
-  document.getElementById('p-stock').value = '999';
-  document.getElementById('p-img').value   = '';
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('active-row').style.display = 'none';
-
-  const sel = document.getElementById('p-cat');
-  sel.innerHTML = categories.map(c =>
-    `<option value="${c.id}">${c.emoji} ${c.name}</option>`
-  ).join('');
-
-  document.getElementById('productModal').classList.add('open');
-}
-
-function closeProductModal() {
+function closeModal() {
   document.getElementById('productModal').classList.remove('open');
   editId = null;
 }
 
-function previewImg() {
+function updatePreview() {
   const url = document.getElementById('p-img').value;
-  const img = document.getElementById('img-preview');
+  const img = document.getElementById('p-preview');
   if (url) { img.src = url; img.style.display = 'block'; }
   else img.style.display = 'none';
 }
@@ -576,7 +507,7 @@ function previewImg() {
 async function saveProduct() {
   const name  = document.getElementById('p-name').value.trim();
   const price = parseFloat(document.getElementById('p-price').value);
-  if (!name || isNaN(price)) return toast('Nom et prix sont obligatoires', 'err');
+  if (!name || isNaN(price)) return toast('Nom et prix obligatoires', true);
 
   const body = {
     name,
@@ -589,122 +520,59 @@ async function saveProduct() {
   };
 
   try {
-    if (editId) {
-      await req('PUT', `/products/${editId}`, body);
-      toast('✅ Produit mis à jour !', 'ok');
-    } else {
-      await req('POST', '/products', body);
-      toast('✅ Produit créé !', 'ok');
-    }
-    closeProductModal();
+    if (editId) await req('PUT', '/products/' + editId, body);
+    else        await req('POST', '/products', body);
+    toast(editId ? '✅ Produit modifié !' : '✅ Produit créé !');
+    closeModal();
     products = await req('GET', '/products');
-    updateCounts();
-    filterProducts();
-  } catch(e) { toast(e.message, 'err'); }
+    renderProducts();
+    renderDashboard();
+  } catch(e) { toast(e.message, true); }
 }
 
-async function toggleProduct(id, currentActive) {
+async function toggleActive(id, current) {
   try {
-    await req('PUT', `/products/${id}`, { active: currentActive ? 0 : 1 });
-    toast(currentActive ? '🚫 Produit masqué' : '✅ Produit activé', 'ok');
+    await req('PUT', '/products/' + id, { active: current ? 0 : 1 });
     products = await req('GET', '/products');
-    updateCounts();
-    filterProducts();
-  } catch(e) { toast(e.message, 'err'); }
+    renderProducts();
+    renderDashboard();
+    toast(current ? '🚫 Produit masqué' : '✅ Produit activé');
+  } catch(e) { toast(e.message, true); }
 }
 
-// ── CATÉGORIES ─────────────────────────────────────────────────────────────
-function renderCategories() {
-  const grid = document.getElementById('cats-grid');
-  if (!categories.length) {
-    grid.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><div class="empty-text">Aucune catégorie</div></div>`;
-    return;
-  }
-  grid.innerHTML = categories.map(c => {
-    const count = products.filter(p => p.category_id == c.id && p.active).length;
-    return `
-      <div class="ccard">
-        <div class="ccard-emoji">${c.emoji}</div>
-        <div>
-          <div class="ccard-name">${c.name}</div>
-          <div class="ccard-count">${count} produit(s) actif(s)</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function openCatModal() {
-  document.getElementById('c-name').value  = '';
-  document.getElementById('c-emoji').value = '';
-  document.getElementById('catModal').classList.add('open');
-}
+// ── MODAL CATEGORIE ────────────────────────────────────────────────────────
+function openCatModal() { document.getElementById('catModal').classList.add('open'); }
 function closeCatModal() { document.getElementById('catModal').classList.remove('open'); }
 
 async function saveCat() {
   const name  = document.getElementById('c-name').value.trim();
   const emoji = document.getElementById('c-emoji').value.trim() || '📦';
-  if (!name) return toast('Le nom est obligatoire', 'err');
+  if (!name) return toast('Nom obligatoire', true);
   try {
     await req('POST', '/categories', { name, emoji });
-    toast('✅ Catégorie créée !', 'ok');
+    toast('✅ Catégorie créée !');
     closeCatModal();
     categories = await req('GET', '/categories');
     products   = await req('GET', '/products');
-    updateCounts();
     renderCategories();
-  } catch(e) { toast(e.message, 'err'); }
-}
-
-// ── COMMANDES ──────────────────────────────────────────────────────────────
-const STATUSES = ['pending','paid','shipped','cancelled'];
-const STATUS_LABELS = { pending:'⏳ En attente', paid:'✅ Payée', shipped:'📦 Expédiée', cancelled:'❌ Annulée' };
-
-function renderOrders() {
-  const tbody = document.getElementById('orders-table');
-  if (!orders.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="loading-row" style="color:var(--hint)">Aucune commande</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = orders.map(o => {
-    const items = JSON.parse(o.items_json || '[]');
-    return `
-      <tr>
-        <td><strong>#${o.id}</strong></td>
-        <td>${o.first_name||'—'}${o.username?`<br><span style="font-size:11px;color:var(--hint)">@${o.username}</span>`:''}</td>
-        <td style="font-size:12px;color:var(--hint);max-width:160px">${items.map(i=>`${i.name} ×${i.qty}`).join(', ')}</td>
-        <td><strong>${fmt(o.total)}</strong></td>
-        <td style="color:var(--hint);font-size:12px">${(o.created_at||'').slice(0,10)}</td>
-        <td>
-          <select onchange="updateOrderStatus(${o.id},this.value)"
-            style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 8px;color:var(--text);font-size:12px;cursor:pointer">
-            ${STATUSES.map(s=>`<option value="${s}"${s===o.status?' selected':''}>${STATUS_LABELS[s]}</option>`).join('')}
-          </select>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-async function updateOrderStatus(id, status) {
-  try {
-    await req('PUT', `/orders/${id}`, { status });
-    const o = orders.find(x=>x.id===id);
-    if (o) o.status = status;
-    toast('Statut mis à jour', 'ok');
     renderDashboard();
-  } catch(e) { toast(e.message, 'err'); }
+  } catch(e) { toast(e.message, true); }
 }
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
-const fmt = n => Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+const fmt = n => Number(n||0).toLocaleString('fr-FR', { style:'currency', currency:'EUR' });
 
-function toast(msg, type='ok') {
+function toast(msg, err=false) {
   const t = document.getElementById('toast');
-  t.textContent  = msg;
-  t.className    = `toast show ${type}`;
+  t.textContent = msg;
+  t.className   = 'toast on' + (err ? ' err' : '');
   setTimeout(() => t.className = 'toast', 3000);
 }
+
+// Fermer modals en cliquant le fond
+document.querySelectorAll('.modal-bg').forEach(bg =>
+  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); })
+);
 </script>
 </body>
 </html>
