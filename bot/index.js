@@ -292,3 +292,20 @@ bot.launch({dropPendingUpdates:true})
 
 process.once('SIGINT',  ()=>bot.stop('SIGINT'));
 process.once('SIGTERM', ()=>bot.stop('SIGTERM'));
+
+// ── Self-ping toutes les 14 min pour garder Railway éveillé ──────────────
+const SELF_URL = process.env.RAILWAY_PUBLIC_DOMAIN
+  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}/health`
+  : null;
+
+if (SELF_URL) {
+  setInterval(async () => {
+    try {
+      const r = await fetch(SELF_URL);
+      console.log(`🏓 Self-ping ${new Date().toISOString()} — ${r.status}`);
+    } catch(e) {
+      console.warn('Self-ping failed:', e.message);
+    }
+  }, 14 * 60 * 1000); // toutes les 14 minutes
+  console.log('🏓 Self-ping activé →', SELF_URL);
+}
