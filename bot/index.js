@@ -51,7 +51,7 @@ await initDb();
 // ── 3. BOT TELEGRAM ───────────────────────────────────────────────────────
 const bot = new Telegraf(BOT_TOKEN);
 
-bot.use((ctx, next) => {
+bot.use(async (ctx, next) => {
   if (ctx.from) await upsertUser({ tg_id:ctx.from.id, username:ctx.from.username||null, first_name:ctx.from.first_name||'Utilisateur' });
   return next();
 });
