@@ -52,7 +52,7 @@ await initDb();
 const bot = new Telegraf(BOT_TOKEN);
 
 bot.use((ctx, next) => {
-  if (ctx.from) upsertUser({ tg_id:ctx.from.id, username:ctx.from.username||null, first_name:ctx.from.first_name||'Utilisateur' });
+  if (ctx.from) await upsertUser({ tg_id:ctx.from.id, username:ctx.from.username||null, first_name:ctx.from.first_name||'Utilisateur' });
   return next();
 });
 
@@ -76,7 +76,7 @@ bot.command('shop', async (ctx) => ctx.reply('🛒 Boutique :', Markup.inlineKey
 
 async function showCats(ctx) {
   if (ctx.callbackQuery) await ctx.answerCbQuery();
-  const cats = getCategories();
+  const cats = await getCategories();
   const btns = cats.map(c => [Markup.button.callback(`${c.emoji} ${c.name}`,`cat_${c.id}`)]);
   btns.push([Markup.button.webApp('🛒 Tout voir',MINI_APP_URL)]);
   await ctx.reply('📂 *Choisissez une catégorie :*',{ parse_mode:'Markdown',...Markup.inlineKeyboard(btns) });
@@ -86,7 +86,7 @@ bot.action('show_cats', showCats);
 
 bot.action(/^cat_(\d+)$/, async (ctx) => {
   await ctx.answerCbQuery();
-  const prods = getProductsByCat(parseInt(ctx.match[1]));
+  const prods = await getProductsByCat(parseInt(ctx.match[1]));
   if (!prods.length) return ctx.reply('Aucun produit dans cette catégorie.');
   for (const p of prods.slice(0,4))
     await ctx.replyWithPhoto({ url:p.image_url },{
@@ -101,7 +101,7 @@ const SE = { pending:'⏳', paid:'✅', shipped:'📦', cancelled:'❌' };
 
 async function showOrders(ctx) {
   if (ctx.callbackQuery) await ctx.answerCbQuery();
-  const orders = getOrdersByUser(ctx.from.id);
+  const orders = await getOrdersByUser(ctx.from.id);
   if (!orders.length) return ctx.reply("📋 Aucune commande pour l'instant.",Markup.inlineKeyboard([[Markup.button.webApp('🛒 Boutique',MINI_APP_URL)]]));
   let msg = '📋 *Vos dernières commandes :*\n\n';
   for (const o of orders)
@@ -145,10 +145,10 @@ bot.command('admin', async (ctx) => {
 });
 
 // ── API REST publique ─────────────────────────────────────────────────────
-app.get('/api/products',    (_,res) => res.json(getProducts()));
-app.get('/api/categories',  (_,res) => res.json(getCategories()));
+app.get('/api/products',    (_,res) => res.json(await getProducts()));
+app.get('/api/categories',  (_,res) => res.json(await getCategories()));
 app.get('/api/products/:id',(req,res) => {
-  const p = getProductById(parseInt(req.params.id));
+  const p = await getProductById(parseInt(req.params.id));
   p ? res.json(p) : res.status(404).json({error:'Introuvable'});
 });
 
@@ -157,11 +157,11 @@ app.post('/api/order', async (req,res) => {
     const { tg_user_id, tg_username, tg_first_name, items, total, delivery_mode, client_info } = req.body;
     if (!tg_user_id||!Array.isArray(items)||!items.length)
       return res.status(400).json({error:'Payload invalide'});
-    const user = getUserByTgId(tg_user_id);
+    const user = await getUserByTgId(tg_user_id);
     if (!user) return res.status(404).json({error:'Utilisateur non trouvé'});
 
     const orderData = JSON.stringify({ items, delivery_mode, client_info });
-    const { lastInsertRowid:orderId } = createOrder(user.id, total, orderData);
+    const { lastInsertRowid:orderId } = await createOrder(user.id, total, orderData);
 
     // ── Lignes articles
     const lines = items.map(i=>`• ${i.name} ×${i.qty} — ${(i.price*i.qty).toFixed(2)} €`).join('\n');
@@ -218,26 +218,26 @@ const adminAuth = (req,res,next) => {
   next();
 };
 
-app.get('/admin/api/products',   adminAuth, (_,res) => res.json(getProducts()));
-app.get('/admin/api/categories', adminAuth, (_,res) => res.json(getCategories()));
+app.get('/admin/api/products',   adminAuth, (_,res) => res.json(await getProducts()));
+app.get('/admin/api/categories', adminAuth, (_,res) => res.json(await getCategories()));
 app.get('/admin/api/orders',     adminAuth, (_,res) => res.json(
-  all('SELECT o.*,u.tg_id,u.first_name,u.username FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC LIMIT 50')
+  await all('SELECT o.*,u.tg_id,u.first_name,u.username FROM orders o JOIN users u ON u.id=o.user_id ORDER BY o.created_at DESC LIMIT 50')
 ));
 
 app.post('/admin/api/products', adminAuth, (req,res) => {
   const {category_id,name,description,price,image_url,stock,variants} = req.body;
   if (!name||price===undefined) return res.status(400).json({error:'name et price requis'});
-  const r = run('INSERT INTO products (category_id,name,description,price,image_url,stock,variants) VALUES (?,?,?,?,?,?,?)',
+  const r = await run('INSERT INTO products (category_id,name,description,price,image_url,stock,variants) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
     [category_id||1,name,description||'',parseFloat(price),image_url||'',parseInt(stock)||999,JSON.stringify(variants||[])]);
   res.json({success:true,id:r.lastInsertRowid});
 });
 
 app.put('/admin/api/products/:id', adminAuth, (req,res) => {
   const id = parseInt(req.params.id);
-  const p  = get('SELECT * FROM products WHERE id=?',[id]);
+  const p  = await get('SELECT * FROM products WHERE id=$1',[id]);
   if (!p) return res.status(404).json({error:'Produit introuvable'});
   const {name,description,price,image_url,stock,active,category_id,variants} = req.body;
-  run(`UPDATE products SET name=?,description=?,price=?,image_url=?,stock=?,active=?,category_id=?,variants=? WHERE id=?`,
+  await run(`UPDATE products SET name=$1,description=$2,price=$3,image_url=$4,stock=$5,active=$6,category_id=$7,variants=$8 WHERE id=$9 RETURNING id`,
     [name??p.name, description??p.description,
      price!==undefined?parseFloat(price):p.price,
      image_url??p.image_url,
@@ -250,14 +250,14 @@ app.put('/admin/api/products/:id', adminAuth, (req,res) => {
 });
 
 app.delete('/admin/api/products/:id', adminAuth, (req,res) => {
-  run('UPDATE products SET active=0 WHERE id=?',[parseInt(req.params.id)]);
+  await run('UPDATE products SET active=0 WHERE id=$1 RETURNING id',[parseInt(req.params.id)]);
   res.json({success:true});
 });
 
 app.post('/admin/api/categories', adminAuth, (req,res) => {
   const {name,emoji} = req.body;
   if (!name) return res.status(400).json({error:'name requis'});
-  const r = run('INSERT INTO categories (name,emoji) VALUES (?,?)',[name,emoji||'📦']);
+  const r = await run('INSERT INTO categories (name,emoji) VALUES ($1,$2) RETURNING id',[name,emoji||'📦']);
   res.json({success:true,id:r.lastInsertRowid});
 });
 
@@ -265,15 +265,15 @@ app.put('/admin/api/categories/:id', adminAuth, (req,res) => {
   const id = parseInt(req.params.id);
   const {name,emoji} = req.body;
   if (!name) return res.status(400).json({error:'name requis'});
-  run('UPDATE categories SET name=?,emoji=? WHERE id=?',[name,emoji||'📦',id]);
+  await run('UPDATE categories SET name=$1,emoji=$2 WHERE id=$3 RETURNING id',[name,emoji||'📦',id]);
   res.json({success:true});
 });
 
 app.delete('/admin/api/categories/:id', adminAuth, (req,res) => {
   const id = parseInt(req.params.id);
   // Désactiver les produits liés
-  run('UPDATE products SET active=0 WHERE category_id=?',[id]);
-  run('DELETE FROM categories WHERE id=?',[id]);
+  await run('UPDATE products SET active=0 WHERE category_id=$1 RETURNING id',[id]);
+  await run('DELETE FROM categories WHERE id=$1',[id]);
   res.json({success:true});
 });
 
@@ -281,7 +281,7 @@ app.put('/admin/api/orders/:id', adminAuth, (req,res) => {
   const {status} = req.body;
   if (!['pending','paid','shipped','cancelled'].includes(status))
     return res.status(400).json({error:'Statut invalide'});
-  run('UPDATE orders SET status=? WHERE id=?',[status,parseInt(req.params.id)]);
+  await run('UPDATE orders SET status=$1 WHERE id=$2 RETURNING id',[status,parseInt(req.params.id)]);
   res.json({success:true});
 });
 
