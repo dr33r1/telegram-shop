@@ -6,7 +6,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
-  upsertUser, getCategories, getProductsByCat,
+  initDb, upsertUser, getCategories, getProductsByCat,
   getProductById, getProducts, createOrder, getOrdersByUser,
   getUserByTgId, all, get, run
 } from './db.js';
